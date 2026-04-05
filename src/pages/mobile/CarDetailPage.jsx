@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { ChevronLeft, Star, MapPin, Zap, Shield, Clock, Fuel, Users, Gauge, Check, Share2, Heart, ChevronRight } from 'lucide-react';
 import { listings } from '../../data/listings';
 
+const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
+
 export default function CarDetailPage({ carId, searchDates, onBack, onBook, onViewHost }) {
   const car = listings.find(c => c.id === carId);
   const [imgIndex, setImgIndex] = useState(0);
@@ -307,8 +309,8 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
             <div className="ios-group-item">
               <Shield size={16} color="var(--accent)" />
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15 }}>Protection included</div>
-                <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Liability coverage on every trip. Upgrade for collision & roadside.</div>
+                <div style={{ fontSize: 15 }}>Protection required</div>
+                <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Choose Auto Basic ($25/day) or Auto Essential ($40/day) at checkout.</div>
               </div>
             </div>
           </div>

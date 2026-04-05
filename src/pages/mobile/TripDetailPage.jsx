@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { ChevronLeft, MapPin, Calendar, Shield, Star, MessageSquare, Phone, ChevronRight, CheckCircle, Clock, X, AlertTriangle, FileText, Edit3, DollarSign } from 'lucide-react';
 import { protectionPlans } from '../../data/listings';
 
+const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
+
 export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onViewCar }) {
   const v = trip?.vehicle;
   if (!v) return <div style={{ padding: 40, textAlign: 'center' }}><button onClick={onBack} className="btn-primary">Back</button></div>;
@@ -99,7 +101,7 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
             { icon: <Clock size={16} />, label: 'Pick-up time', value: '10:00 AM' },
             { icon: <MapPin size={16} />, label: 'Pick-up', value: `${v.location.city}, ${v.location.state}` },
             { icon: <Shield size={16} />, label: 'Protection', value: trip.protectionPlan, action: (isUpcoming || isPending) ? () => setShowModifyProtection(true) : null },
-            { icon: <DollarSign size={16} />, label: 'Total', value: `$${trip.total}`, bold: true },
+            { icon: <DollarSign size={16} />, label: 'Total', value: fmt(trip.total), bold: true },
           ].map((item, i) => (
             <button key={item.label} onClick={item.action} disabled={!item.action} style={{
               width: '100%', display: 'flex', alignItems: 'center', padding: '14px 16px',
@@ -200,16 +202,16 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
             <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', marginBottom: 16 }}>
               <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '14px 16px 0' }}>RECEIPT</div>
               {[
-                { label: `${v.pricePerDay}/day × ${Math.ceil((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000)} days`, value: `$${v.pricePerDay * Math.ceil((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000)}` },
+                { label: `${fmt(v.pricePerDay).replace('$','')}/day × ${Math.ceil((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000)} days`, value: fmt(v.pricePerDay * Math.ceil((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000)) },
                 { label: 'Protection (' + trip.protectionPlan + ')', value: trip.protectionPlan === 'Standard' ? '$45' : trip.protectionPlan === 'Premier' ? '$90' : '$0' },
-                { label: 'Service fee', value: `$${Math.round(trip.total * 0.12)}` },
+                { label: 'Service fee', value: fmt(Math.round(trip.total * 0.12)) },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 16px', fontSize: 14, color: 'var(--text-secondary)' }}>
                   <span>{item.label}</span><span>{item.value}</span>
                 </div>
               ))}
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', borderTop: '0.5px solid var(--border)', fontSize: 16, fontWeight: 700 }}>
-                <span>Total charged</span><span style={{ color: 'var(--accent-text)' }}>${trip.total}</span>
+                <span>Total charged</span><span style={{ color: 'var(--accent-text)' }}>{fmt(trip.total)}</span>
               </div>
             </div>
 
@@ -259,7 +261,7 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
               <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', marginBottom: 10 }}>REFUND ESTIMATE</div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 6 }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Trip total</span>
-                <span>${trip.total}</span>
+                <span>{fmt(trip.total)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 6 }}>
                 <span style={{ color: 'var(--text-secondary)' }}>Refund rate ({daysUntil}d before trip)</span>

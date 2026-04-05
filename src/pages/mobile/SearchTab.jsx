@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, X, MapPin, Zap, Star, ChevronRight, SlidersHorizontal, Navigation, Map, List } from 'lucide-react';
 import { listings, cities } from '../../data/listings';
+
+const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 // leaflet CSS imported in global.css
 
 function CarCard({ car, onTap, tripDays }) {
@@ -60,14 +62,14 @@ function CarCard({ car, onTap, tripDays }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, paddingTop: 10, borderTop: '0.5px solid var(--border)' }}>
           {showTrip ? (
             <>
-              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>${car.pricePerDay}/day × {tripDays} days</span>
-              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent-text)' }}>${car.pricePerDay * tripDays} <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-tertiary)' }}>before tax</span></span>
+              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{fmt(car.pricePerDay)}/day × {tripDays} days</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent-text)' }}>{fmt(car.pricePerDay * tripDays)} <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-tertiary)' }}>before tax</span></span>
             </>
           ) : (
             <>
               <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>From</span>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
-                <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent-text)' }}>${car.pricePerDay}</span>
+                <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent-text)' }}>{fmt(car.pricePerDay)}</span>
                 <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>/day</span>
               </div>
             </>
@@ -175,7 +177,7 @@ export default function SearchTab({ onSelectCar }) {
         const lat = car.location.lat + (parseInt(car.id) * 0.002);
         const lng = car.location.lng + (parseInt(car.id) * 0.003);
         bounds.push([lat, lng]);
-        const price = td > 0 ? `$${car.pricePerDay * td}` : `$${car.pricePerDay}`;
+        const price = td > 0 ? fmt(car.pricePerDay * td) : fmt(car.pricePerDay);
         const icon = L.divIcon({
           className: '',
           html: `<div style="background:#C9A96E;color:#0A0A0A;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700;font-family:Inter,sans-serif;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer">${price}</div>`,
@@ -410,8 +412,8 @@ export default function SearchTab({ onSelectCar }) {
                   </div>
                   <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent-text)' }}>
                     {startDate && endDate
-                      ? `$${selectedMapCar.pricePerDay * Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000)} total`
-                      : `$${selectedMapCar.pricePerDay}/day`}
+                      ? `${fmt(selectedMapCar.pricePerDay * Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000))} total`
+                      : `${fmt(selectedMapCar.pricePerDay)}/day`}
                   </div>
                 </div>
               </button>

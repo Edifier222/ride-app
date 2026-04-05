@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronDown, ChevronRight, Shield, Check, Star, Lock, MapP
 import { protectionPlans } from '../../data/listings';
 import { useBooking } from '../../context/BookingContext';
 
+const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
+
 export default function BookingFlow({ car, dates, onBack, onComplete }) {
   const [step, setStep] = useState(0); // 0=protection, 1=bill/addons, 2=questions, 3=payment
   const { updateBooking } = useBooking();
@@ -86,7 +88,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
       <img src={car.images[0]} alt="" style={{ width: 56, height: 40, objectFit: 'cover', borderRadius: 8 }} />
       <div style={{ flex: 1, textAlign: 'left' }}>
         <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{formatShort(startDate)} – {formatShort(endDate)}</div>
-        <div style={{ fontSize: 16, fontWeight: 700 }}>{step < 2 ? `$${vehicleCost.toFixed(2)}` : `$${total.toFixed(2)}`}</div>
+        <div style={{ fontSize: 16, fontWeight: 700 }}>{step < 2 ? `${fmt(vehicleCost)}` : `${fmt(total)}`}</div>
       </div>
       <ChevronDown size={18} color="var(--text-tertiary)" style={{ transform: showBillDetail ? 'rotate(180deg)' : 'none', transition: '0.2s' }} />
     </button>
@@ -169,7 +171,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
               )}
               <Shield size={24} color={plan.id === p.id ? 'var(--accent)' : 'var(--text-tertiary)'} style={{ margin: '0 auto 10px' }} />
               <div style={{ fontSize: 16, fontWeight: 700, fontFamily: 'var(--font-display)', marginBottom: 4 }}>{p.name}</div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--accent-text)' }}>${(p.pricePerDay * days).toFixed(2)}</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--accent-text)' }}>{fmt((p.pricePerDay * days))}</div>
             </button>
           ))}
         </div>
@@ -255,7 +257,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
             <img src={car.images[0]} alt="" style={{ width: 80, height: 56, objectFit: 'cover', borderRadius: 10 }} />
             <div>
               <div style={{ fontSize: 17, fontWeight: 600 }}>{car.year} {car.make} {car.model}</div>
-              <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>${car.pricePerDay.toFixed(2)}/night</div>
+              <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{fmt(car.pricePerDay)}/night</div>
             </div>
           </div>
 
@@ -312,7 +314,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
               }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 2 }}>{addon.label}</div>
-                  <div style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>${addon.price.toFixed(2)} · <span style={{ textDecoration: 'underline' }}>See details</span></div>
+                  <div style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{fmt(addon.price)} · <span style={{ textDecoration: 'underline' }}>See details</span></div>
                 </div>
                 <div style={{
                   width: 22, height: 22, borderRadius: 4,
@@ -329,22 +331,22 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
           {/* Price breakdown — base cost only, no protection or tax yet */}
           <div style={{ borderTop: '0.5px solid var(--border)', paddingTop: 14, marginTop: 8 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 6 }}>
-              <span>${car.pricePerDay.toFixed(2)} × {days} days</span>
-              <span>${vehicleCost.toFixed(2)}</span>
+              <span>{fmt(car.pricePerDay)} × {days} days</span>
+              <span>{fmt(vehicleCost)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 6 }}>
               <span>{plan.name} protection</span>
-              <span>${protectionCost.toFixed(2)}</span>
+              <span>{fmt(protectionCost)}</span>
             </div>
             {addonsCost > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 6 }}>
                 <span>Add-ons</span>
-                <span>${addonsCost.toFixed(2)}</span>
+                <span>{fmt(addonsCost)}</span>
               </div>
             )}
             <div style={{ borderTop: '0.5px solid var(--border)', paddingTop: 10, marginTop: 4, display: 'flex', justifyContent: 'space-between', fontSize: 17, fontWeight: 700 }}>
               <span>Before tax</span>
-              <span style={{ color: 'var(--accent-text)' }}>${subtotal.toFixed(2)}</span>
+              <span style={{ color: 'var(--accent-text)' }}>{fmt(subtotal)}</span>
             </div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 6 }}>Taxes calculated at checkout</div>
           </div>
@@ -352,7 +354,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
       </div>
 
       {bottomBar(
-        <div><div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Before tax</div><div style={{ fontSize: 20, fontWeight: 700 }}>${subtotal.toFixed(2)}</div></div>,
+        <div><div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Before tax</div><div style={{ fontSize: 20, fontWeight: 700 }}>{fmt(subtotal)}</div></div>,
         continueBtn(() => setStep(2))
       )}
 
@@ -466,7 +468,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
               <div>
                 <span style={{ fontSize: 15, fontWeight: 600 }}>Add cancellation coverage</span>
-                <span style={{ fontSize: 15, fontWeight: 600 }}> for ${(plan.pricePerDay * days).toFixed(2)}</span>
+                <span style={{ fontSize: 15, fontWeight: 600 }}> for {fmt((plan.pricePerDay * days))}</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span className="badge" style={{ background: 'var(--accent-dim)', color: 'var(--accent-text)', fontSize: 11 }}>Recommended</span>
@@ -529,23 +531,23 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
         <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: 16, marginBottom: 20 }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', marginBottom: 12 }}>PRICE BREAKDOWN</div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 8 }}>
-            <span>${car.pricePerDay.toFixed(2)} × {days} days</span><span>${vehicleCost.toFixed(2)}</span>
+            <span>{fmt(car.pricePerDay)} × {days} days</span><span>{fmt(vehicleCost)}</span>
           </div>
           {protectionCost > 0 && (
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 8 }}>
-              <span>{declineProtection ? 'No' : plan.name} protection</span><span>${protectionCost.toFixed(2)}</span>
+              <span>{declineProtection ? 'No' : plan.name} protection</span><span>{fmt(protectionCost)}</span>
             </div>
           )}
           {addonsCost > 0 && (
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 8 }}>
-              <span>Add-ons</span><span>${addonsCost.toFixed(2)}</span>
+              <span>Add-ons</span><span>{fmt(addonsCost)}</span>
             </div>
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 8 }}>
-            <span>Tax ({car.location.state} {(stateTaxRate * 100).toFixed(1)}%)</span><span>${taxAmount.toFixed(2)}</span>
+            <span>Tax ({car.location.state} {(stateTaxRate * 100).toFixed(1)}%)</span><span>{fmt(taxAmount)}</span>
           </div>
           <div style={{ borderTop: '0.5px solid var(--border)', paddingTop: 10, marginTop: 4, display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 700 }}>
-            <span>Total</span><span style={{ color: 'var(--accent-text)' }}>${total.toFixed(2)}</span>
+            <span>Total</span><span style={{ color: 'var(--accent-text)' }}>{fmt(total)}</span>
           </div>
         </div>
 
@@ -656,7 +658,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
               <span style={{ width: 16, height: 16, border: '2px solid rgba(10,10,10,0.3)', borderTopColor: 'var(--bg)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
               Processing...
             </span>
-          ) : `Submit request · $${total.toFixed(2)}`}
+          ) : `Submit request · ${fmt(total)}`}
         </button>
       )}
     </div>

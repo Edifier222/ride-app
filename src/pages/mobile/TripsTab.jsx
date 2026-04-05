@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Calendar, Star, ChevronRight, Clock, CheckCircle, X } from 'lucide-react';
 import { guestTrips } from '../../data/mockBookings';
 
+const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
+
 export default function TripsTab({ lastBooking, onVerify, onSelectTrip }) {
   const [priceBreakdown, setPriceBreakdown] = useState(null);
   const trips = [];
@@ -200,25 +202,25 @@ export default function TripsTab({ lastBooking, onVerify, onSelectTrip }) {
               {/* Line items */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, color: 'var(--text-secondary)' }}>
-                  <span>${dailyRate.toFixed(2)} × {days} days</span>
-                  <span>${vehicleCost.toFixed(2)}</span>
+                  <span>{fmt(dailyRate)} × {days} days</span>
+                  <span>{fmt(vehicleCost)}</span>
                 </div>
                 {protectionCost > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, color: 'var(--text-secondary)' }}>
                     <span>{t.protectionPlan} protection</span>
-                    <span>${protectionCost.toFixed(2)}</span>
+                    <span>{fmt(protectionCost)}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 15, color: 'var(--text-secondary)' }}>
                   <span>Tax ({v.location?.state || 'State'} {(taxRate * 100).toFixed(1)}%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>{fmt(tax)}</span>
                 </div>
               </div>
 
               {/* Total */}
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 700, paddingTop: 12, borderTop: '0.5px solid var(--border)' }}>
                 <span>Total</span>
-                <span style={{ color: 'var(--accent-text)' }}>${total.toFixed(2)}</span>
+                <span style={{ color: 'var(--accent-text)' }}>{fmt(total)}</span>
               </div>
             </div>
           </>

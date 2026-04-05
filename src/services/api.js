@@ -289,13 +289,83 @@ export async function signup({ email, password, firstName, lastName }) {
     const res = await fetch(`${CORE_API}/auth/creds/create`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ email, password, first_name: firstName, last_name: lastName }),
+      body: JSON.stringify({ email, password, first_name: firstName, last_name: lastName, country: 'US', locale: 'en-us' }),
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error || 'Signup failed');
     return json;
   } catch (err) {
     console.error('Signup error:', err);
+    throw err;
+  }
+}
+
+// Create a quote (real price calculation)
+export async function createQuote({ rentalId, dateFrom, dateTo, token }) {
+  try {
+    const res = await fetch(`${CORE_API}/quotes`, {
+      method: 'POST',
+      headers: getAuthHeaders(token),
+      body: JSON.stringify({
+        rental_id: parseInt(rentalId),
+        date_from: dateFrom,
+        date_to: dateTo,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Quote failed');
+    return json;
+  } catch (err) {
+    console.error('Quote error:', err);
+    throw err;
+  }
+}
+
+// Get quote details
+export async function getQuote(quoteId, token) {
+  try {
+    const res = await fetch(`${CORE_API}/quotes/${quoteId}`, {
+      headers: getAuthHeaders(token),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Quote fetch failed');
+    return json;
+  } catch (err) {
+    console.error('Quote fetch error:', err);
+    throw err;
+  }
+}
+
+// Create a booking
+export async function createBooking({ quoteId, token }) {
+  try {
+    const res = await fetch(`${CORE_API}/bookings`, {
+      method: 'POST',
+      headers: getAuthHeaders(token),
+      body: JSON.stringify({
+        quote_id: quoteId,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Booking failed');
+    return json;
+  } catch (err) {
+    console.error('Booking error:', err);
+    throw err;
+  }
+}
+
+// Get booking details
+export async function getBooking(bookingId, token) {
+  try {
+    const res = await fetch(`${CORE_API}/bookings/${bookingId}`, {
+      headers: getAuthHeaders(token),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Booking fetch failed');
+    return json;
+  } catch (err) {
+    console.error('Booking fetch error:', err);
     throw err;
   }
 }

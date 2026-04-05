@@ -3,7 +3,7 @@ import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function AuthModal() {
-  const { showAuth, authTab, setAuthTab, closeAuth, login, signup } = useAuth();
+  const { showAuth, authTab, setAuthTab, closeAuth, login, signup, authError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');

@@ -4,10 +4,9 @@ import { listings } from '../../data/listings';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 
-export default function CarDetailPage({ carId, searchDates, onBack, onBook, onViewHost }) {
+export default function CarDetailPage({ carId, searchDates, onBack, onBook, onViewHost, isFavorite, onToggleFavorite }) {
   const car = listings.find(c => c.id === carId);
   const [imgIndex, setImgIndex] = useState(0);
-  const [liked, setLiked] = useState(false);
   const [startDate, setStartDate] = useState(searchDates?.startDate || '');
   const [endDate, setEndDate] = useState(searchDates?.endDate || '');
   const [pickupTime, setPickupTime] = useState('10:00 AM');
@@ -42,12 +41,12 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
               background: 'rgba(22,22,22,0.85)', display: 'flex',
               alignItems: 'center', justifyContent: 'center',
             }}><Share2 size={16} /></button>
-            <button onClick={() => setLiked(!liked)} style={{
+            <button onClick={onToggleFavorite} style={{
               width: 36, height: 36, borderRadius: '50%',
               background: 'rgba(22,22,22,0.85)', display: 'flex',
               alignItems: 'center', justifyContent: 'center',
             }}>
-              <Heart size={16} fill={liked ? '#ff3b30' : 'none'} stroke={liked ? '#ff3b30' : '#000'} />
+              <Heart size={16} fill={isFavorite ? '#ff3b30' : 'none'} stroke={isFavorite ? '#ff3b30' : '#fff'} />
             </button>
           </div>
         </div>

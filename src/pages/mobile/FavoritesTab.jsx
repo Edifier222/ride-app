@@ -1,19 +1,15 @@
-import { useState } from 'react';
-import { Heart, Star, MapPin, Zap } from 'lucide-react';
-import { savedCars } from '../../data/mockBookings';
+import { Heart, Star, MapPin } from 'lucide-react';
+import { listings } from '../../data/listings';
 
-export default function FavoritesTab({ onSelectCar }) {
-  const [favorites, setFavorites] = useState(savedCars);
+const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 
-  const removeFav = (e, id) => {
-    e.stopPropagation();
-    setFavorites(prev => prev.filter(c => c.id !== id));
-  };
+export default function FavoritesTab({ favoriteIds, onToggleFavorite, onSelectCar }) {
+  const favorites = listings.filter(c => favoriteIds.has(c.id));
 
   return (
     <div style={{ minHeight: '100%' }}>
       <div style={{
-        padding: '16px 16px 8px',
+        padding: '16px 16px 12px',
         background: 'rgba(22,22,22,0.85)',
         backdropFilter: 'blur(24px)',
       }}>
@@ -23,9 +19,9 @@ export default function FavoritesTab({ onSelectCar }) {
       <div style={{ padding: '8px 16px' }}>
         {favorites.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 20px' }}>
-            <Heart size={48} color="var(--tertiary-label)" style={{ marginBottom: 16 }} />
-            <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 6 }}>No favorites yet</div>
-            <div style={{ fontSize: 15, color: 'var(--secondary-label)' }}>Cars you save will appear here</div>
+            <Heart size={48} color="var(--text-tertiary)" style={{ marginBottom: 16 }} />
+            <div style={{ fontSize: 20, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 6 }}>No favorites yet</div>
+            <div style={{ fontSize: 15, color: 'var(--text-secondary)' }}>Tap the heart on any car to save it here</div>
           </div>
         ) : (
           favorites.map(car => (
@@ -39,14 +35,14 @@ export default function FavoritesTab({ onSelectCar }) {
                   <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 3 }}>
                     {car.year} {car.make} {car.model}
                   </div>
-                  <div style={{ fontSize: 13, color: 'var(--secondary-label)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Star size={11} fill="currentColor" color="var(--label)" /> {car.rating} · <MapPin size={11} /> {car.location.city}
+                  <div style={{ fontSize: 13, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Star size={11} fill="currentColor" color="var(--accent)" /> {car.rating} · <MapPin size={11} /> {car.location.city}
                   </div>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontWeight: 700 }}>${car.pricePerDay}<span style={{ fontWeight: 400, fontSize: 13, color: 'var(--secondary-label)' }}>/day</span></span>
-                  <button onClick={(e) => removeFav(e, car.id)} style={{
-                    width: 32, height: 32, borderRadius: '50%', background: 'var(--fill)',
+                  <span style={{ fontWeight: 700 }}>{fmt(car.pricePerDay)}<span style={{ fontWeight: 400, fontSize: 13, color: 'var(--text-secondary)' }}>/day</span></span>
+                  <button onClick={(e) => { e.stopPropagation(); onToggleFavorite(car.id); }} style={{
+                    width: 32, height: 32, borderRadius: '50%', background: 'var(--surface-2)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     <Heart size={14} fill="#ff3b30" stroke="#ff3b30" />

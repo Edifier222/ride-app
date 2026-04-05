@@ -203,7 +203,29 @@ function AppShell() {
   const [activeTab, setActiveTab] = useState('search');
   const [stack, setStack] = useState([]); // navigation stack for push/pop
   const [lastBooking, setLastBooking] = useState(null); // tracks the most recent booking
+  const [favoriteIds, setFavoriteIds] = useState(new Set(['9', '12', '19', '22'])); // default saved cars
+  const [conversations, setConversations] = useState([
+    { id: 1, host: { name: 'Marcus J.', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face' }, vehicle: '2024 Tesla Model Y', lastMessage: "Looking forward to your trip! I'll send the pickup address the day before.", time: '2h ago', unread: true, messages: [{ from: 'you', text: "Hi Marcus! I just booked your Tesla for next week. Any special instructions for pickup?", time: '3h ago' }, { from: 'host', text: "Hey! Great to hear. Pickup is at my driveway — super easy.", time: '2h ago' }, { from: 'host', text: "Looking forward to your trip! I'll send the pickup address the day before.", time: '2h ago' }] },
+    { id: 2, host: { name: 'Sarah K.', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face' }, vehicle: '2025 Ford Mustang', lastMessage: 'Thanks for the great review! Hope to host you again.', time: '3d ago', unread: false, messages: [{ from: 'you', text: "Just returned the Mustang. Amazing car, thanks so much!", time: '3d ago' }, { from: 'host', text: "Thanks for the great review! Hope to host you again.", time: '3d ago' }] },
+    { id: 3, host: { name: 'David R.', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face' }, vehicle: '2024 Jeep Wrangler', lastMessage: 'The Wrangler is ready for Sedona! Full tank and top already off.', time: '1w ago', unread: false, messages: [{ from: 'you', text: "Hey David, do you recommend taking the Wrangler to Sedona?", time: '1w ago' }, { from: 'host', text: "Absolutely! It's perfect for it. The red rocks trails are incredible.", time: '1w ago' }, { from: 'host', text: "The Wrangler is ready for Sedona! Full tank and top already off.", time: '1w ago' }] },
+  ]);
   const { isLoggedIn, openLogin } = useAuth();
+
+  const toggleFavorite = (carId) => {
+    setFavoriteIds(prev => {
+      const next = new Set(prev);
+      if (next.has(carId)) next.delete(carId);
+      else next.add(carId);
+      return next;
+    });
+  };
+
+  const addMessage = (convoId, message) => {
+    setConversations(prev => {
+      if (!prev) return prev; // handled in ChatScreen
+      return prev.map(c => c.id === convoId ? { ...c, messages: [...c.messages, message], lastMessage: message.text, time: 'Just now' } : c);
+    });
+  };
 
   // Push a screen onto the stack (like iOS push navigation)
   const push = (screen, props = {}) => {
@@ -242,7 +264,7 @@ function AppShell() {
     if (currentScreen) {
       switch (currentScreen.screen) {
         case 'carDetail':
-          return <CarDetailPage carId={currentScreen.props.carId} searchDates={currentScreen.props.searchDates} onBack={pop} onBook={(car, dates) => push('booking', { car, dates })} onViewHost={(host) => push('hostProfile', { host })} />;
+          return <CarDetailPage carId={currentScreen.props.carId} searchDates={currentScreen.props.searchDates} onBack={pop} onBook={(car, dates) => push('booking', { car, dates })} onViewHost={(host) => push('hostProfile', { host })} isFavorite={favoriteIds.has(currentScreen.props.carId)} onToggleFavorite={() => toggleFavorite(currentScreen.props.carId)} />;
         case 'booking':
           return <BookingFlow car={currentScreen.props.car} dates={currentScreen.props.dates} onBack={pop} onComplete={(bookingData) => {
             setLastBooking(bookingData);
@@ -266,7 +288,18 @@ function AppShell() {
         case 'hostReviews':
           return <SubScreen title="Reviews" onBack={pop}>{HostReviewsContent}</SubScreen>;
         case 'chat':
-          return <ChatScreen convo={currentScreen.props.convo} onBack={pop} />;
+          return <ChatScreen convo={currentScreen.props.convo} onBack={pop} onSendMessage={(convoId, msg) => {
+            setConversations(prev => {
+              // Update existing convo or add new one
+              const exists = prev.find(c => c.id === convoId);
+              if (exists) {
+                return prev.map(c => c.id === convoId ? { ...c, messages: [...c.messages, msg], lastMessage: msg.text, time: 'Just now' } : c);
+              } else {
+                const convo = currentScreen.props.convo;
+                return [{ ...convo, messages: [...convo.messages, msg], lastMessage: msg.text, time: 'Just now' }, ...prev];
+              }
+            });
+          }} />;
         case 'hostProfile':
           return <HostProfilePage
             host={currentScreen.props.host}
@@ -295,9 +328,9 @@ function AppShell() {
 
     switch (activeTab) {
       case 'search': return <SearchTab key={tabKey} onSelectCar={(id, searchDates) => push('carDetail', { carId: id, searchDates })} />;
-      case 'favorites': return <FavoritesTab onSelectCar={(id) => push('carDetail', { carId: id })} />;
+      case 'favorites': return <FavoritesTab favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onSelectCar={(id) => push('carDetail', { carId: id })} />;
       case 'trips': return <TripsTab lastBooking={lastBooking} onVerify={() => push('verification')} onSelectTrip={(trip) => push('tripDetail', { trip })} />;
-      case 'messages': return <MessagesTab onOpenChat={(convo) => push('chat', { convo })} />;
+      case 'messages': return <MessagesTab conversations={conversations} onOpenChat={(convo) => push('chat', { convo })} />;
       case 'profile': return <ProfileTab onListCar={() => push('listCar')} onVerify={() => push('verification')} onNavigate={(screen) => push(screen)} />;
       default: return null;
     }

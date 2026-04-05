@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, Send } from 'lucide-react';
 
-export default function ChatScreen({ convo, onBack }) {
+export default function ChatScreen({ convo, onBack, onSendMessage }) {
   const [messages, setMessages] = useState(convo.messages);
   const [newMsg, setNewMsg] = useState('');
   const scrollRef = useRef(null);
@@ -12,7 +12,9 @@ export default function ChatScreen({ convo, onBack }) {
 
   const send = () => {
     if (!newMsg.trim()) return;
-    setMessages(prev => [...prev, { from: 'you', text: newMsg.trim(), time: 'Just now' }]);
+    const msg = { from: 'you', text: newMsg.trim(), time: 'Just now' };
+    setMessages(prev => [...prev, msg]);
+    if (onSendMessage) onSendMessage(convo.id, msg);
     setNewMsg('');
   };
 

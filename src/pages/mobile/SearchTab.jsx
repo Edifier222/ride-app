@@ -594,12 +594,8 @@ export default function SearchTab({ onSelectCar }) {
 
           </div>
 
-          {/* Search button — fixed bottom, outside scrollable area */}
-          <div style={{ flexShrink: 0, padding: '12px 20px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 20px))', borderTop: '0.5px solid var(--border)', background: 'var(--surface)' }}>
-            <button className="btn-primary" onClick={applySearch} disabled={!searchCity}>
-              <Search size={18} /> Search cars
-            </button>
-          </div>
+          {/* Bottom spacer for safe area */}
+          <div style={{ flexShrink: 0, height: 'env(safe-area-inset-bottom, 20px)' }} />
         </div>
       )}
 

@@ -10,7 +10,7 @@ export default function HostProfilePage({ host, onBack, onSelectCar, onMessage }
       {/* Header */}
       <div style={{
         padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12,
-        background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)',
+        background: 'var(--glass)', backdropFilter: 'blur(24px)',
         borderBottom: '0.5px solid var(--border)',
       }}>
         <button onClick={onBack} style={{

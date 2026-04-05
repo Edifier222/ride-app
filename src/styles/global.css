@@ -46,6 +46,10 @@
   --shadow-card: 0 8px 30px rgba(0,0,0,0.4);
   --shadow-float: 0 4px 16px rgba(0,0,0,0.5);
 
+  /* Glass backgrounds */
+  --glass: rgba(22,22,22,0.85);
+  --glass-heavy: rgba(22,22,22,0.92);
+
   /* Tab bar */
   --tab-height: 83px;
 }
@@ -207,6 +211,95 @@ input, select, textarea { font-family: var(--font-body); font-size: 17px; color:
 /* Scrollbar hide */
 ::-webkit-scrollbar { display: none; }
 * { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ==========================================
+   LIGHT THEME — Outdoorsy brand
+   ========================================== */
+[data-theme="light"] {
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-2: #F5F5F0;
+  --surface-3: #EBEBEB;
+  --border: rgba(0,0,0,0.08);
+  --border-light: rgba(0,0,0,0.12);
+
+  --text: #1A1A1A;
+  --text-secondary: #555555;
+  --text-tertiary: #999999;
+  --text-inverse: #FFFFFF;
+
+  /* Outdoorsy green accent */
+  --accent: #2D6B4D;
+  --accent-dim: rgba(45,107,77,0.08);
+  --accent-text: #2D6B4D;
+
+  --success: #2D9F6F;
+  --success-bg: rgba(45,159,111,0.08);
+  --error: #D4453A;
+  --error-bg: rgba(212,69,58,0.06);
+  --warning: #C2860C;
+  --warning-bg: rgba(194,134,12,0.08);
+  --blue: #2563EB;
+
+  --glass: rgba(255,255,255,0.92);
+  --glass-heavy: rgba(255,255,255,0.95);
+
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-float: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .text-gold {
+  background: linear-gradient(135deg, #2D6B4D 0%, #3D8B6D 50%, #2D6B4D 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="light"] .btn-primary {
+  background: #2D6B4D;
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(45,107,77,0.2);
+}
+
+[data-theme="light"] .chip.active {
+  background: #2D6B4D;
+  color: #FFFFFF;
+  border-color: #2D6B4D;
+}
+
+[data-theme="light"] .card {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+[data-theme="light"] .ios-input {
+  background: #F5F5F0;
+  border: 1px solid rgba(0,0,0,0.12);
+  color: #1A1A1A;
+}
+
+[data-theme="light"] .ios-input:focus {
+  border-color: #2D6B4D;
+  box-shadow: 0 0 0 2px rgba(45,107,77,0.15);
+}
+
+[data-theme="light"] .ios-group {
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+[data-theme="light"] .sheet {
+  background: #FFFFFF;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+[data-theme="light"] .sheet-backdrop {
+  background: rgba(0,0,0,0.25);
+}
+
+[data-theme="light"] .badge-dark {
+  background: #1A1A1A;
+  color: #FFFFFF;
+}
 
 /* Gold gradient text utility */
 .text-gold {

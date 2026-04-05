@@ -12,7 +12,7 @@ export default function FavoritesTab({ favoriteIds, onToggleFavorite, onSelectCa
     <div style={{ minHeight: '100%' }}>
       <div style={{
         padding: isDesktop ? '0' : '16px 16px 12px',
-        background: isDesktop ? 'transparent' : 'rgba(22,22,22,0.85)',
+        background: isDesktop ? 'transparent' : 'var(--glass)',
         backdropFilter: isDesktop ? 'none' : 'blur(24px)',
       }}>
         {!isDesktop && <h1 className="text-large-title">Favorites</h1>}

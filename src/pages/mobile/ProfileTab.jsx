@@ -1,10 +1,12 @@
 import { useAuth } from '../../context/AuthContext';
-import { ChevronRight, CheckCircle, Car, Shield, CreditCard, Bell, CircleHelp, LogOut, Plus, Star, DollarSign, Repeat, FileText } from 'lucide-react';
+import { ChevronRight, CheckCircle, Car, Shield, CreditCard, Bell, CircleHelp, LogOut, Plus, Star, DollarSign, Repeat, FileText, Sun, Moon } from 'lucide-react';
 import useIsDesktop from '../../hooks/useIsDesktop';
+import { useTheme } from '../../hooks/useTheme';
 
 export default function ProfileTab({ onListCar, onVerify, onNavigate }) {
   const { user, isLoggedIn, isHost, openLogin, openSignup, logout, toggleMode, authToken } = useAuth();
   const isDesktop = useIsDesktop();
+  const { theme, toggleTheme, isDark } = useTheme();
 
   if (!isLoggedIn) {
     return (
@@ -26,7 +28,7 @@ export default function ProfileTab({ onListCar, onVerify, onNavigate }) {
     <div style={{ minHeight: '100%' }}>
       <div style={{
         padding: isDesktop ? '0' : '16px 16px 12px',
-        background: isDesktop ? 'transparent' : 'rgba(22,22,22,0.85)',
+        background: isDesktop ? 'transparent' : 'var(--glass)',
         backdropFilter: isDesktop ? 'none' : 'blur(24px)',
       }}>
         {!isDesktop && <h1 className="text-large-title">Profile</h1>}
@@ -115,7 +117,29 @@ export default function ProfileTab({ onListCar, onVerify, onNavigate }) {
         )}
 
         {/* Account section */}
-        <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--secondary-label)', marginBottom: 8, paddingLeft: 4 }}>ACCOUNT</div>
+        {/* Appearance */}
+        <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-tertiary)', marginBottom: 8, paddingLeft: 4 }}>APPEARANCE</div>
+        <div className="ios-group" style={{ marginBottom: 20 }}>
+          <button className="ios-group-item" onClick={toggleTheme} style={{ padding: '14px 16px' }}>
+            {isDark ? <Moon size={20} color="var(--text-secondary)" /> : <Sun size={20} color="var(--accent)" />}
+            <span style={{ flex: 1, fontSize: 16 }}>Theme</span>
+            <span style={{ fontSize: 14, color: 'var(--text-secondary)', marginRight: 8 }}>{isDark ? 'Dark' : 'Light'}</span>
+            <div style={{
+              width: 50, height: 30, borderRadius: 15,
+              background: isDark ? 'var(--surface-3)' : 'var(--accent)',
+              padding: 2, transition: 'background 0.2s',
+            }}>
+              <div style={{
+                width: 26, height: 26, borderRadius: 13, background: '#fff',
+                transform: isDark ? 'translateX(0)' : 'translateX(20px)',
+                transition: 'transform 0.2s',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+              }} />
+            </div>
+          </button>
+        </div>
+
+        <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-tertiary)', marginBottom: 8, paddingLeft: 4 }}>ACCOUNT</div>
         <div className="ios-group" style={{ marginBottom: 20 }}>
           <button className="ios-group-item" onClick={onVerify}>
             <Shield size={20} color="var(--secondary-label)" />

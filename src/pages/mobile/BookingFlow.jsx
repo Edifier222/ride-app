@@ -145,7 +145,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
       padding: '12px 20px', paddingBottom: isDesktop ? '12px' : 'calc(12px + env(safe-area-inset-bottom, 20px))',
-      background: 'rgba(22,22,22,0.92)', backdropFilter: 'blur(24px)',
+      background: 'var(--glass-heavy)', backdropFilter: 'blur(24px)',
       borderTop: '0.5px solid var(--border-light)',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       ...(isDesktop ? { maxWidth: 520, left: '50%', transform: 'translateX(-50%)', borderRadius: 'var(--r-lg) var(--r-lg) 0 0', border: '1px solid var(--border)', borderBottom: 'none' } : {}),
@@ -269,7 +269,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
   // ========== STEP 0: PROTECTION PACKAGE (mandatory) ==========
   if (step === 0) return (
     <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100, ...(isDesktop ? { maxWidth: 520, margin: '0 auto', border: '1px solid var(--border)', borderTop: 'none' } : {}) }}>
-      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
+      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--glass)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={onBack} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
         <span style={{ fontSize: 17, fontWeight: 600 }}>Protection package</span>
       </div>
@@ -374,7 +374,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
   // ========== STEP 1: BILL ==========
   if (step === 1) return (
     <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100, ...(isDesktop ? { maxWidth: 520, margin: '0 auto', border: '1px solid var(--border)', borderTop: 'none' } : {}) }}>
-      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
+      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--glass)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={onBack} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
         <span style={{ fontSize: 17, fontWeight: 600 }}>Bill</span>
       </div>
@@ -525,7 +525,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
   // ========== STEP 2: HOST QUESTIONS ==========
   if (step === 2) return (
     <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100, ...(isDesktop ? { maxWidth: 520, margin: '0 auto', border: '1px solid var(--border)', borderTop: 'none' } : {}) }}>
-      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
+      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--glass)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={() => setStep(0)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
         <span style={{ fontSize: 17, fontWeight: 600, flex: 1 }}>Booking</span>
       </div>
@@ -575,7 +575,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
   // ========== STEP 3: OPTIONAL UPGRADES ==========
   if (step === 3) return (
     <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100, ...(isDesktop ? { maxWidth: 520, margin: '0 auto', border: '1px solid var(--border)', borderTop: 'none' } : {}) }}>
-      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
+      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--glass)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={() => setStep(2)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
         <span style={{ fontSize: 17, fontWeight: 600, flex: 1 }}>Booking</span>
       </div>
@@ -652,7 +652,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
   // ========== STEP 4: PAY AND BOOK ==========
   return (
     <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100, ...(isDesktop ? { maxWidth: 520, margin: '0 auto', border: '1px solid var(--border)', borderTop: 'none' } : {}) }}>
-      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
+      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--glass)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={() => setStep(3)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
         <span style={{ fontSize: 17, fontWeight: 600, flex: 1 }}>Booking</span>
       </div>

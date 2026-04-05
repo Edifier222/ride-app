@@ -110,7 +110,7 @@ export default function VerificationFlow({ onBack, onComplete }) {
   return (
     <div style={{ minHeight: '100%', background: 'var(--bg)', maxWidth: 680, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
+      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--glass)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={step === 'fallback-front' ? onBack : () => {
           const steps = ['fallback-front', 'fallback-back', 'fallback-selfie', 'fallback-review'];
           const idx = steps.indexOf(step);

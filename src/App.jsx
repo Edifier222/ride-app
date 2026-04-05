@@ -33,7 +33,7 @@ function SubScreen({ title, onBack, children }) {
   return (
     <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 40 }}>
       <div style={{ maxWidth: 600, margin: '0 auto' }}>
-        <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
+        <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'var(--glass)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
           <button onClick={onBack} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <ChevronLeft size={20} />
           </button>
@@ -204,7 +204,10 @@ const HostReviewsContent = (
   </div>
 );
 
+import { useTheme } from './hooks/useTheme';
+
 function AppShell() {
+  useTheme(); // Initialize theme on app load
   const [activeTab, setActiveTab] = useState('search');
   const [stack, setStack] = useState([]); // navigation stack for push/pop
   const [lastBooking, setLastBooking] = useState(null); // tracks the most recent booking
@@ -251,16 +254,17 @@ function AppShell() {
   const [tabKey, setTabKey] = useState(0);
 
   const switchTab = (tabId) => {
-    if (tabId !== 'search' && tabId !== 'profile' && !isLoggedIn) {
-      openLogin();
-      return;
-    }
-    if (tabId === activeTab) {
+    if (tabId === activeTab && stack.length === 0) {
       // Tapping the same tab — reset it (close modals, scroll to top)
       setTabKey(k => k + 1);
+      return;
     }
     setActiveTab(tabId);
     setStack([]);
+    // Open login modal for protected tabs if not logged in
+    if (tabId !== 'search' && tabId !== 'profile' && !isLoggedIn) {
+      openLogin();
+    }
   };
 
   // Render the top of the navigation stack, or the active tab
@@ -419,7 +423,7 @@ function AppShell() {
         <div className="mobile-tab-bar" style={{
           position: 'fixed', bottom: 0, left: 0, right: 0,
           height: 'var(--tab-height)',
-          background: 'rgba(22,22,22,0.85)',
+          background: 'var(--glass)',
           backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
           borderTop: '0.5px solid var(--border-light)',
           display: 'flex', alignItems: 'flex-start',

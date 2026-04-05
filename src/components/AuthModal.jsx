@@ -46,14 +46,15 @@ export default function AuthModal() {
     }}>
       <div onClick={closeAuth} style={{
         position: 'absolute', inset: 0,
-        background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+        background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(12px)',
       }} />
 
       <div style={{
-        position: 'relative', background: 'var(--surface)',
-        borderRadius: 'var(--r-xl)', border: '1px solid var(--border-light)',
+        position: 'relative', background: '#1E1E1E',
+        borderRadius: 'var(--r-xl)', border: '1px solid rgba(255,255,255,0.12)',
         width: '100%', maxWidth: 400, maxHeight: '90vh', overflow: 'auto',
-        padding: 28, boxShadow: '0 24px 48px rgba(0,0,0,0.5)', margin: 16,
+        padding: 28, boxShadow: '0 24px 80px rgba(0,0,0,0.9), 0 0 80px rgba(201,169,110,0.08)', margin: 16,
+        animation: 'fadeIn 0.2s ease',
       }}>
         <button onClick={closeAuth} style={{
           position: 'absolute', top: 16, right: 16,

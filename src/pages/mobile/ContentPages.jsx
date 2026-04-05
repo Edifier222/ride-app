@@ -8,7 +8,7 @@ function PageShell({ title, onBack, children }) {
       <div style={{
         padding: isDesktop ? '16px 32px' : '12px 16px',
         display: 'flex', alignItems: 'center', gap: 12,
-        background: isDesktop ? 'transparent' : 'rgba(22,22,22,0.85)',
+        background: isDesktop ? 'transparent' : 'var(--glass)',
         backdropFilter: isDesktop ? 'none' : 'blur(24px)',
         borderBottom: isDesktop ? 'none' : '0.5px solid var(--border)',
       }}>

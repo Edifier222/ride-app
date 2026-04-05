@@ -182,18 +182,18 @@ export default function CarDetailPage({ carId, carData, searchDates, onBack, onB
           }}>
             <button onClick={onBack} style={{
               width: 36, height: 36, borderRadius: '50%',
-              background: 'rgba(22,22,22,0.85)', display: 'flex',
+              background: 'var(--glass)', display: 'flex',
               alignItems: 'center', justifyContent: 'center',
             }}><ChevronLeft size={20} /></button>
             <div style={{ display: 'flex', gap: 8 }}>
               <button style={{
                 width: 36, height: 36, borderRadius: '50%',
-                background: 'rgba(22,22,22,0.85)', display: 'flex',
+                background: 'var(--glass)', display: 'flex',
                 alignItems: 'center', justifyContent: 'center',
               }}><Share2 size={16} /></button>
               <button onClick={onToggleFavorite} style={{
                 width: 36, height: 36, borderRadius: '50%',
-                background: 'rgba(22,22,22,0.85)', display: 'flex',
+                background: 'var(--glass)', display: 'flex',
                 alignItems: 'center', justifyContent: 'center',
               }}>
                 <Heart size={16} fill={isFavorite ? '#ff3b30' : 'none'} stroke={isFavorite ? '#ff3b30' : '#fff'} />
@@ -468,7 +468,7 @@ export default function CarDetailPage({ carId, carData, searchDates, onBack, onB
       {!isDesktop && (
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,
-        background: 'rgba(22,22,22,0.92)',
+        background: 'var(--glass-heavy)',
         backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
         borderTop: '0.5px solid var(--border-light)',
         padding: '12px 16px',

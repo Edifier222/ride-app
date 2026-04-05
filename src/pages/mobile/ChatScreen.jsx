@@ -23,7 +23,7 @@ export default function ChatScreen({ convo, onBack, onSendMessage }) {
       {/* Header */}
       <div style={{
         padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
-        background: 'rgba(22,22,22,0.92)', backdropFilter: 'blur(24px)',
+        background: 'var(--glass-heavy)', backdropFilter: 'blur(24px)',
         borderBottom: '0.5px solid var(--border)',
         flexShrink: 0,
       }}>

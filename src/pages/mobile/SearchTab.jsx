@@ -105,15 +105,6 @@ export default function SearchTab({ onSelectCar }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
 
-  // Unique values from data
-  const allMakes = useMemo(() => Array.from(new Set(apiResults.map(l => l.make).filter(Boolean))).sort(), [apiResults]);
-  const brandModels = useMemo(() => {
-    const map = {};
-    apiResults.forEach(l => { if (l.make) { if (!map[l.make]) map[l.make] = new Set(); if (l.model) map[l.make].add(l.model); } });
-    return Object.fromEntries(Object.entries(map).map(([k, v]) => [k, Array.from(v).sort()]));
-  }, [apiResults]);
-  const allFeatures = useMemo(() => Array.from(new Set(apiResults.flatMap(l => l.features || []).filter(Boolean))).sort(), [apiResults]);
-
   // Search modal state
   const [searchCity, setSearchCity] = useState('');
   const [searchStart, setSearchStart] = useState('');
@@ -123,6 +114,15 @@ export default function SearchTab({ onSelectCar }) {
   const { results: apiResults, loading: searchLoading, isLive } = useSearch({
     city, startDate, endDate, type: typeFilter,
   });
+
+  // Unique values from API results
+  const allMakes = useMemo(() => Array.from(new Set(apiResults.map(l => l.make).filter(Boolean))).sort(), [apiResults]);
+  const brandModels = useMemo(() => {
+    const map = {};
+    apiResults.forEach(l => { if (l.make) { if (!map[l.make]) map[l.make] = new Set(); if (l.model) map[l.make].add(l.model); } });
+    return Object.fromEntries(Object.entries(map).map(([k, v]) => [k, Array.from(v).sort()]));
+  }, [apiResults]);
+  const allFeatures = useMemo(() => Array.from(new Set(apiResults.flatMap(l => l.features || []).filter(Boolean))).sort(), [apiResults]);
 
   // Apply client-side filters on top of API/fake results
   const filtered = useMemo(() => {

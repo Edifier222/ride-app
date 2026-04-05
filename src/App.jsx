@@ -220,10 +220,16 @@ function AppShell() {
     setStack([]);
   };
 
+  const [tabKey, setTabKey] = useState(0);
+
   const switchTab = (tabId) => {
     if (tabId !== 'search' && tabId !== 'profile' && !isLoggedIn) {
       openLogin();
       return;
+    }
+    if (tabId === activeTab) {
+      // Tapping the same tab — reset it (close modals, scroll to top)
+      setTabKey(k => k + 1);
     }
     setActiveTab(tabId);
     setStack([]);
@@ -288,7 +294,7 @@ function AppShell() {
     }
 
     switch (activeTab) {
-      case 'search': return <SearchTab onSelectCar={(id, searchDates) => push('carDetail', { carId: id, searchDates })} />;
+      case 'search': return <SearchTab key={tabKey} onSelectCar={(id, searchDates) => push('carDetail', { carId: id, searchDates })} />;
       case 'favorites': return <FavoritesTab onSelectCar={(id) => push('carDetail', { carId: id })} />;
       case 'trips': return <TripsTab lastBooking={lastBooking} onVerify={() => push('verification')} onSelectTrip={(trip) => push('tripDetail', { trip })} />;
       case 'messages': return <MessagesTab onOpenChat={(convo) => push('chat', { convo })} />;

@@ -166,13 +166,21 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
   const bottomBar = (left, right) => (
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
-      padding: '12px 20px', paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 20px))',
+      padding: '12px 20px', paddingBottom: isDesktop ? '12px' : 'calc(12px + env(safe-area-inset-bottom, 20px))',
       background: 'rgba(22,22,22,0.92)', backdropFilter: 'blur(24px)',
       borderTop: '0.5px solid var(--border-light)',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      ...(isDesktop ? { maxWidth: 680, left: '50%', transform: 'translateX(-50%)', borderRadius: 'var(--r-lg) var(--r-lg) 0 0', border: '1px solid var(--border)', borderBottom: 'none' } : {}),
     }}>
       {left}
       {right}
+    </div>
+  );
+
+  // Desktop wrapper for step content
+  const stepWrapper = (children) => (
+    <div style={isDesktop ? { maxWidth: 640, margin: '0 auto', padding: '0 24px' } : {}}>
+      {children}
     </div>
   );
 
@@ -189,13 +197,36 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
     </button>
   );
 
+  // Desktop step progress bar
+  const stepNames = ['Protection', 'Review', 'Details', 'Payment'];
+  const StepProgress = () => isDesktop ? (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 0, padding: '16px 20px 8px', maxWidth: 480, margin: '0 auto' }}>
+      {stepNames.map((name, i) => (
+        <div key={name} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 'none' }}>
+            <div style={{
+              width: 28, height: 28, borderRadius: '50%', fontSize: 12, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: i <= step ? 'var(--accent)' : 'var(--surface-3)',
+              color: i <= step ? 'var(--text-inverse)' : 'var(--text-tertiary)',
+              transition: 'all 0.2s',
+            }}>{i < step ? <Check size={14} /> : i + 1}</div>
+            <span style={{ fontSize: 11, fontWeight: i === step ? 600 : 400, color: i <= step ? 'var(--text)' : 'var(--text-tertiary)' }}>{name}</span>
+          </div>
+          {i < 3 && <div style={{ flex: 1, height: 2, background: i < step ? 'var(--accent)' : 'var(--surface-3)', margin: '0 8px', marginBottom: 18, transition: 'background 0.2s' }} />}
+        </div>
+      ))}
+    </div>
+  ) : null;
+
   // ========== STEP 0: PROTECTION PACKAGE (mandatory) ==========
   if (step === 0) return (
-    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100 }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100, ...(isDesktop ? { maxWidth: 680, margin: '0 auto' } : {}) }}>
       <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={onBack} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
         <span style={{ fontSize: 17, fontWeight: 600 }}>Protection package</span>
       </div>
+      <StepProgress />
 
       <div style={{ padding: '20px 16px' }}>
         {/* Car summary */}
@@ -295,11 +326,12 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
 
   // ========== STEP 1: BILL ==========
   if (step === 1) return (
-    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100 }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100, ...(isDesktop ? { maxWidth: 680, margin: '0 auto' } : {}) }}>
       <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={onBack} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
         <span style={{ fontSize: 17, fontWeight: 600 }}>Bill</span>
       </div>
+      <StepProgress />
 
       <div style={{ padding: '20px 16px' }}>
         {/* Trip card */}
@@ -445,11 +477,12 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
 
   // ========== STEP 2: HOST QUESTIONS ==========
   if (step === 2) return (
-    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100 }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100, ...(isDesktop ? { maxWidth: 680, margin: '0 auto' } : {}) }}>
       <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={() => setStep(0)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
         <span style={{ fontSize: 17, fontWeight: 600, flex: 1 }}>Booking</span>
       </div>
+      <StepProgress />
 
       <div style={{ padding: '16px' }}>
         {tripSummary}
@@ -494,11 +527,12 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
 
   // ========== STEP 3: OPTIONAL UPGRADES ==========
   if (step === 3) return (
-    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100 }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100, ...(isDesktop ? { maxWidth: 680, margin: '0 auto' } : {}) }}>
       <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={() => setStep(2)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
         <span style={{ fontSize: 17, fontWeight: 600, flex: 1 }}>Booking</span>
       </div>
+      <StepProgress />
 
       <div style={{ padding: '16px' }}>
         {tripSummary}
@@ -570,7 +604,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
 
   // ========== STEP 4: PAY AND BOOK ==========
   return (
-    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100 }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100, ...(isDesktop ? { maxWidth: 680, margin: '0 auto' } : {}) }}>
       <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={() => setStep(3)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>
         <span style={{ fontSize: 17, fontWeight: 600, flex: 1 }}>Booking</span>

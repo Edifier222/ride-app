@@ -16,6 +16,11 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
 
   const [showCancel, setShowCancel] = useState(false);
   const [cancelled, setCancelled] = useState(false);
+  const [showAddDriver, setShowAddDriver] = useState(false);
+  const [driverName, setDriverName] = useState('');
+  const [driverEmail, setDriverEmail] = useState('');
+  const [driverInviteSent, setDriverInviteSent] = useState(false);
+  const [additionalDrivers, setAdditionalDrivers] = useState([]);
 
   // Dynamic countdown
   const getCountdown = () => {
@@ -190,8 +195,18 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
               </button>
             )}
 
-            {/* Add additional driver */}
-            <button style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: '16px 18px', marginBottom: 10, textAlign: 'left' }}>
+            {/* Additional drivers */}
+            {additionalDrivers.map((d, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: '14px 18px', marginBottom: 6 }}>
+                <span style={{ fontSize: 20 }}>👤</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 500 }}>{d.name}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{d.email} · Invite sent</div>
+                </div>
+                <Clock size={14} color="var(--warning)" />
+              </div>
+            ))}
+            <button onClick={() => setShowAddDriver(true)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: '16px 18px', marginBottom: 10, textAlign: 'left' }}>
               <span style={{ fontSize: 24 }}>👤</span>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 15, fontWeight: 600 }}>Add additional driver</div>
@@ -354,6 +369,53 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
               Cancel trip · Refund ${refundAmount}
             </button>
             <button onClick={() => setShowCancel(false)} className="btn-secondary">Keep my trip</button>
+          </div>
+        </>
+      )}
+
+      {/* ===== ADD DRIVER MODAL ===== */}
+      {showAddDriver && (
+        <>
+          <div className="sheet-backdrop" onClick={() => { setShowAddDriver(false); setDriverInviteSent(false); }} />
+          <div className="sheet" style={{ padding: '0 20px 24px' }}>
+            <div className="sheet-handle" />
+
+            {driverInviteSent ? (
+              <div style={{ textAlign: 'center', padding: '30px 0 10px' }}>
+                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--success-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <CheckCircle size={28} color="var(--success)" />
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--font-display)', marginBottom: 6 }}>Invite sent!</div>
+                <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 20 }}>
+                  An invitation has been sent to {driverName} at {driverEmail}. They'll need to verify their identity before the trip.
+                </p>
+                <button className="btn-primary" onClick={() => { setShowAddDriver(false); setDriverInviteSent(false); setDriverName(''); setDriverEmail(''); }}>Done</button>
+              </div>
+            ) : (
+              <>
+                <div style={{ padding: '20px 0 16px' }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--font-display)', marginBottom: 6 }}>Add additional driver</div>
+                  <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    Additional drivers must create a RIDE account and verify their identity before the trip.
+                  </p>
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <label style={{ fontSize: 12, color: 'var(--text-tertiary)', fontWeight: 500, marginBottom: 6, display: 'block' }}>Full name</label>
+                  <input className="ios-input" placeholder="John Smith" value={driverName} onChange={e => setDriverName(e.target.value)} />
+                </div>
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ fontSize: 12, color: 'var(--text-tertiary)', fontWeight: 500, marginBottom: 6, display: 'block' }}>Email address</label>
+                  <input className="ios-input" type="email" placeholder="john@email.com" value={driverEmail} onChange={e => setDriverEmail(e.target.value)} />
+                </div>
+                <button className="btn-primary" disabled={!driverName || !driverEmail} onClick={() => {
+                  setAdditionalDrivers(prev => [...prev, { name: driverName, email: driverEmail }]);
+                  setDriverInviteSent(true);
+                }}>
+                  Send invite
+                </button>
+                <button onClick={() => setShowAddDriver(false)} style={{ width: '100%', textAlign: 'center', padding: '12px 0', fontSize: 15, color: 'var(--text-secondary)', marginTop: 8 }}>Cancel</button>
+              </>
+            )}
           </div>
         </>
       )}

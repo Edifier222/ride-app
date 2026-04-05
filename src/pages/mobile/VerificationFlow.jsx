@@ -9,12 +9,20 @@ export default function VerificationFlow({ onBack, onComplete }) {
   const [personaLoaded, setPersonaLoaded] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
-  // Try to load Persona SDK
+  // Try to load Persona SDK with timeout
   useEffect(() => {
     if (!authToken) {
-      setStep('fallback-front'); // No auth, use mock flow
+      setStep('fallback-front');
       return;
     }
+
+    // Timeout — if Persona doesn't load in 8 seconds, fall back
+    const timeout = setTimeout(() => {
+      if (step === 'loading' || step === 'persona') {
+        console.log('[RIDE] Persona timeout, using fallback');
+        setStep('fallback-front');
+      }
+    }, 8000);
 
     // Load Persona SDK script
     if (!window.Persona) {
@@ -28,6 +36,7 @@ export default function VerificationFlow({ onBack, onComplete }) {
       };
       script.onerror = () => {
         console.log('[RIDE] Persona SDK failed to load, using fallback');
+        clearTimeout(timeout);
         setStep('fallback-front');
       };
       document.head.appendChild(script);
@@ -35,6 +44,8 @@ export default function VerificationFlow({ onBack, onComplete }) {
       setPersonaLoaded(true);
       startPersona();
     }
+
+    return () => clearTimeout(timeout);
   }, []);
 
   const startPersona = async () => {
@@ -117,10 +128,11 @@ export default function VerificationFlow({ onBack, onComplete }) {
   if (step === 'loading' || step === 'persona') return (
     <div style={{ minHeight: '100%', background: 'var(--bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
       <div style={{ width: 24, height: 24, border: '2px solid var(--surface-3)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
-      <div style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
+      <div style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 20 }}>
         {step === 'loading' ? 'Loading verification...' : 'Verification in progress...'}
       </div>
-      <button onClick={onBack} style={{ fontSize: 14, color: 'var(--text-tertiary)', marginTop: 20, textDecoration: 'underline' }}>Cancel</button>
+      <button onClick={() => setStep('fallback-front')} style={{ fontSize: 14, color: 'var(--accent)', marginBottom: 12 }}>Use manual verification</button>
+      <button onClick={onBack} style={{ fontSize: 14, color: 'var(--text-tertiary)', textDecoration: 'underline' }}>Cancel</button>
     </div>
   );
 

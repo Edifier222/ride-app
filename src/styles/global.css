@@ -281,20 +281,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 17px; color:
   padding: 0 32px;
 }
 
-/* Desktop search layout: sidebar + grid */
-.desktop-search-layout {
-  display: flex; gap: 32px; padding-top: 24px;
-}
-.desktop-search-sidebar {
-  width: 280px; flex-shrink: 0;
-  position: sticky; top: 88px;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
-  padding-bottom: 40px;
-}
-.desktop-search-main {
-  flex: 1; min-width: 0;
-}
+/* Desktop car grid */
 .desktop-car-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -412,5 +399,4 @@ input, select, textarea { font-family: var(--font-body); font-size: 17px; color:
   .desktop-car-grid {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
-  .desktop-search-sidebar { width: 300px; }
 }

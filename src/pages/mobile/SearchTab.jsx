@@ -332,133 +332,171 @@ export default function SearchTab({ onSelectCar }) {
 
   const today = new Date().toISOString().split('T')[0];
 
-  // Shared filter panel content — used in both mobile sheet and desktop sidebar
+  // Desktop sidebar filter panel
   const FilterPanelContent = () => {
-    const Toggle = ({ on, onToggle, label }) => (
-      <button onClick={onToggle} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', width: '100%' }}>
-        <span style={{ fontSize: 16 }}>{label}</span>
-        <div style={{ width: 50, height: 30, borderRadius: 15, background: on ? 'var(--success)' : 'var(--surface-3)', padding: 2, transition: 'background 0.2s' }}>
-          <div style={{ width: 26, height: 26, borderRadius: 13, background: '#fff', transform: on ? 'translateX(20px)' : 'translateX(0)', transition: 'transform 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
-        </div>
-      </button>
-    );
-
     const filteredBrands = filterSearch
       ? allMakes.filter(m => m.toLowerCase().includes(filterSearch.toLowerCase()))
       : allMakes;
 
+    const SectionLabel = ({ children }) => (
+      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 10 }}>{children}</div>
+    );
+
+    const FilterOption = ({ label, active, onClick }) => (
+      <button onClick={onClick} style={{
+        padding: '7px 14px', borderRadius: 'var(--r-pill)',
+        fontSize: 13, fontWeight: active ? 600 : 400,
+        background: active ? 'var(--accent)' : 'var(--surface-2)',
+        color: active ? 'var(--text-inverse)' : 'var(--text-secondary)',
+        border: active ? '1px solid var(--accent)' : '1px solid var(--border)',
+        transition: 'all 0.15s',
+      }}>{label}</button>
+    );
+
+    const ToggleRow = ({ on, onToggle, label }) => (
+      <button onClick={onToggle} style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '10px 0', width: '100%',
+      }}>
+        <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{label}</span>
+        <div style={{
+          width: 42, height: 24, borderRadius: 12,
+          background: on ? 'var(--success)' : 'var(--surface-3)',
+          padding: 2, transition: 'background 0.2s',
+        }}>
+          <div style={{
+            width: 20, height: 20, borderRadius: 10, background: '#fff',
+            transform: on ? 'translateX(18px)' : 'translateX(0)',
+            transition: 'transform 0.2s',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+          }} />
+        </div>
+      </button>
+    );
+
     return (
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         {/* Vehicle type */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>VEHICLE TYPE</div>
+        <div>
+          <SectionLabel>Vehicle type</SectionLabel>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {['All', 'Car', 'SUV', 'Truck'].map(t => (
-              <button key={t} className={`chip ${typeFilter === t ? 'active' : ''}`} onClick={() => setTypeFilter(t)} style={{ fontSize: 13, flex: 1, justifyContent: 'center' }}>{t}</button>
+              <FilterOption key={t} label={t} active={typeFilter === t} onClick={() => setTypeFilter(t)} />
             ))}
           </div>
         </div>
 
         {/* Brand */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>BRAND</div>
-          <div className="ios-group">
-            <button className="ios-group-item" onClick={() => { setBrandExpanded(!brandExpanded); setFilterSearch(''); }} style={{ padding: '12px 16px' }}>
-              <span style={{ flex: 1, fontSize: 15 }}>Brand</span>
-              <span style={{ fontSize: 14, color: makeFilter !== 'All' ? 'var(--accent-text)' : 'var(--text-tertiary)', marginRight: 4 }}>
-                {makeFilter !== 'All' ? makeFilter : 'All'}
-              </span>
-              <ChevronRight size={14} color="var(--text-tertiary)" style={{ transform: brandExpanded ? 'rotate(90deg)' : 'none', transition: '0.2s' }} />
-            </button>
-            {brandExpanded && (
-              <div style={{ borderTop: '0.5px solid var(--border)' }}>
-                <div style={{ padding: '8px 12px' }}>
-                  <input className="ios-input" placeholder="Search brands..." value={filterSearch} onChange={e => setFilterSearch(e.target.value)} style={{ padding: '8px 12px', fontSize: 14 }} />
-                </div>
-                <button onClick={() => { setMakeFilter('All'); setModelFilter('All'); setBrandExpanded(false); setFilterSearch(''); }} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderBottom: '0.5px solid var(--border)' }}>
-                  <span style={{ fontSize: 14 }}>All brands</span>
-                  {makeFilter === 'All' && <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)' }} />}
+        <div>
+          <SectionLabel>Brand</SectionLabel>
+          <button onClick={() => { setBrandExpanded(!brandExpanded); setFilterSearch(''); }} style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '10px 14px', borderRadius: 'var(--r-sm)',
+            background: 'var(--surface)', border: '1px solid var(--border)',
+          }}>
+            <span style={{ fontSize: 14, color: makeFilter !== 'All' ? 'var(--accent-text)' : 'var(--text-secondary)' }}>
+              {makeFilter !== 'All' ? makeFilter : 'All brands'}
+            </span>
+            <ChevronRight size={14} color="var(--text-tertiary)" style={{ transform: brandExpanded ? 'rotate(90deg)' : 'none', transition: '0.2s' }} />
+          </button>
+
+          {brandExpanded && (
+            <div style={{ marginTop: 8, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 'var(--r-sm)', overflow: 'hidden', maxHeight: 240, overflowY: 'auto' }}>
+              <div style={{ padding: 8 }}>
+                <input className="ios-input" placeholder="Search..." value={filterSearch} onChange={e => setFilterSearch(e.target.value)} style={{ padding: '7px 10px', fontSize: 13 }} />
+              </div>
+              <button onClick={() => { setMakeFilter('All'); setModelFilter('All'); setBrandExpanded(false); setFilterSearch(''); }} style={{
+                width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '8px 14px', borderTop: '0.5px solid var(--border)',
+                fontSize: 13, color: makeFilter === 'All' ? 'var(--accent-text)' : 'var(--text)',
+              }}>
+                All brands
+                {makeFilter === 'All' && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)' }} />}
+              </button>
+              {filteredBrands.map(brand => (
+                <button key={brand} onClick={() => { setMakeFilter(brand); setModelFilter('All'); setBrandExpanded(false); setFilterSearch(''); }} style={{
+                  width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '8px 14px', borderTop: '0.5px solid var(--border)',
+                  fontSize: 13, color: makeFilter === brand ? 'var(--accent-text)' : 'var(--text)',
+                }}>
+                  {brand}
+                  {makeFilter === brand && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)' }} />}
                 </button>
-                {filteredBrands.map(brand => (
-                  <button key={brand} onClick={() => { setMakeFilter(brand); setModelFilter('All'); setBrandExpanded(false); setFilterSearch(''); }} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderBottom: '0.5px solid var(--border)' }}>
-                    <span style={{ fontSize: 14 }}>{brand}</span>
-                    {makeFilter === brand && <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)' }} />}
-                  </button>
-                ))}
-              </div>
-            )}
-            {makeFilter !== 'All' && (
-              <div style={{ borderTop: '0.5px solid var(--border)', padding: '8px 12px' }}>
-                <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 6 }}>Model</div>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  <button className={`chip ${modelFilter === 'All' ? 'active' : ''}`} onClick={() => setModelFilter('All')} style={{ fontSize: 12 }}>All</button>
-                  {(brandModels[makeFilter] || []).map(m => (
-                    <button key={m} className={`chip ${modelFilter === m ? 'active' : ''}`} onClick={() => setModelFilter(m)} style={{ fontSize: 12 }}>{m}</button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {makeFilter !== 'All' && (
+            <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <FilterOption label="All" active={modelFilter === 'All'} onClick={() => setModelFilter('All')} />
+              {(brandModels[makeFilter] || []).map(m => (
+                <FilterOption key={m} label={m} active={modelFilter === m} onClick={() => setModelFilter(m)} />
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Fuel */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>FUEL TYPE</div>
+        {/* Fuel type */}
+        <div>
+          <SectionLabel>Fuel type</SectionLabel>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {['All', 'Gas', 'Electric', 'Hybrid'].map(f => (
-              <button key={f} className={`chip ${fuelFilter === f ? 'active' : ''}`} onClick={() => setFuelFilter(f)} style={{ fontSize: 13, flex: 1, justifyContent: 'center' }}>{f}</button>
+              <FilterOption key={f} label={f} active={fuelFilter === f} onClick={() => setFuelFilter(f)} />
             ))}
           </div>
         </div>
 
         {/* Transmission */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>TRANSMISSION</div>
-          <div style={{ display: 'flex', gap: 6 }}>
+        <div>
+          <SectionLabel>Transmission</SectionLabel>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {['All', 'Automatic', 'Manual'].map(t => (
-              <button key={t} className={`chip ${transFilter === t ? 'active' : ''}`} onClick={() => setTransFilter(t)} style={{ fontSize: 13, flex: 1, justifyContent: 'center' }}>{t}</button>
+              <FilterOption key={t} label={t} active={transFilter === t} onClick={() => setTransFilter(t)} />
             ))}
           </div>
         </div>
 
         {/* Seats */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>SEATS</div>
-          <div style={{ display: 'flex', gap: 6 }}>
+        <div>
+          <SectionLabel>Seats</SectionLabel>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {['All', '2', '4', '5', '7'].map(s => (
-              <button key={s} className={`chip ${seatsFilter === s ? 'active' : ''}`} onClick={() => setSeatsFilter(s)} style={{ fontSize: 13, flex: 1, justifyContent: 'center' }}>{s === 'All' ? 'Any' : s + '+'}</button>
+              <FilterOption key={s} label={s === 'All' ? 'Any' : s + '+'} active={seatsFilter === s} onClick={() => setSeatsFilter(s)} />
             ))}
           </div>
         </div>
 
         {/* Price */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>PRICE</div>
-          <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: 14 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Max per day</span>
-              <span style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--font-display)', color: 'var(--accent-text)' }}>${maxPrice}</span>
+        <div>
+          <SectionLabel>Price per day</SectionLabel>
+          <div style={{ padding: '12px 14px', background: 'var(--surface)', borderRadius: 'var(--r-sm)', border: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
+              <span style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>Up to</span>
+              <span style={{ fontSize: 22, fontWeight: 700, fontFamily: 'var(--font-display)', color: 'var(--accent-text)' }}>${maxPrice}</span>
             </div>
-            <input type="range" min={30} max={200} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>
+            <input type="range" min={30} max={200} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)', height: 4 }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-tertiary)', marginTop: 6 }}>
               <span>$30</span><span>$200</span>
             </div>
           </div>
         </div>
 
-        {/* Booking toggles */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>BOOKING</div>
-          <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: '0 14px' }}>
-            <Toggle on={instantFilter} onToggle={() => setInstantFilter(!instantFilter)} label="Instant book" />
+        {/* Toggles */}
+        <div>
+          <SectionLabel>Booking options</SectionLabel>
+          <div style={{ padding: '2px 14px', background: 'var(--surface)', borderRadius: 'var(--r-sm)', border: '1px solid var(--border)' }}>
+            <ToggleRow on={instantFilter} onToggle={() => setInstantFilter(!instantFilter)} label="Instant book" />
             <div style={{ borderTop: '0.5px solid var(--border)' }} />
-            <Toggle on={deliveryFilter} onToggle={() => setDeliveryFilter(!deliveryFilter)} label="Delivery" />
+            <ToggleRow on={deliveryFilter} onToggle={() => setDeliveryFilter(!deliveryFilter)} label="Delivery available" />
           </div>
         </div>
 
         {/* Reset */}
         {activeFilterCount > 0 && (
-          <button onClick={resetFilters} style={{ width: '100%', textAlign: 'center', fontSize: 13, color: 'var(--accent)', padding: '8px 0' }}>
+          <button onClick={resetFilters} style={{
+            width: '100%', padding: '10px 0', textAlign: 'center',
+            fontSize: 13, color: 'var(--accent)', fontWeight: 500,
+          }}>
             Reset all filters
           </button>
         )}
@@ -526,14 +564,85 @@ export default function SearchTab({ onSelectCar }) {
             )}
           </button>
 
-          {/* Desktop: result count + map toggle inline */}
+          {/* Desktop: horizontal filter bar + result count */}
           {isDesktop && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, paddingBottom: 8, borderBottom: '0.5px solid var(--border)' }}>
-              <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
-                {isLive && <span style={{ color: 'var(--success)', marginRight: 8 }}>Live data</span>}
-                <span style={{ fontWeight: 600, color: 'var(--text)' }}>{filtered.length}</span> car{filtered.length !== 1 ? 's' : ''} available
+            <>
+              {/* Filter chips row */}
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginTop: 20 }}>
+                {/* Type */}
+                {['Car', 'SUV', 'Truck'].map(t => (
+                  <button key={t} onClick={() => setTypeFilter(typeFilter === t ? 'All' : t)} style={{
+                    padding: '7px 16px', borderRadius: 'var(--r-pill)', fontSize: 13, fontWeight: 500,
+                    background: typeFilter === t ? 'var(--accent)' : 'var(--surface-2)',
+                    color: typeFilter === t ? 'var(--text-inverse)' : 'var(--text-secondary)',
+                    border: typeFilter === t ? '1px solid var(--accent)' : '1px solid var(--border)',
+                    transition: 'all 0.15s',
+                  }}>{t}</button>
+                ))}
+
+                <div style={{ width: 1, height: 20, background: 'var(--border-light)' }} />
+
+                {/* Fuel */}
+                {['Electric', 'Hybrid'].map(f => (
+                  <button key={f} onClick={() => setFuelFilter(fuelFilter === f ? 'All' : f)} style={{
+                    padding: '7px 16px', borderRadius: 'var(--r-pill)', fontSize: 13, fontWeight: 500,
+                    background: fuelFilter === f ? 'var(--accent)' : 'var(--surface-2)',
+                    color: fuelFilter === f ? 'var(--text-inverse)' : 'var(--text-secondary)',
+                    border: fuelFilter === f ? '1px solid var(--accent)' : '1px solid var(--border)',
+                    transition: 'all 0.15s',
+                  }}>{f}</button>
+                ))}
+
+                {/* Instant book */}
+                <button onClick={() => setInstantFilter(!instantFilter)} style={{
+                  padding: '7px 16px', borderRadius: 'var(--r-pill)', fontSize: 13, fontWeight: 500,
+                  background: instantFilter ? 'var(--accent)' : 'var(--surface-2)',
+                  color: instantFilter ? 'var(--text-inverse)' : 'var(--text-secondary)',
+                  border: instantFilter ? '1px solid var(--accent)' : '1px solid var(--border)',
+                  display: 'flex', alignItems: 'center', gap: 5, transition: 'all 0.15s',
+                }}><Zap size={12} /> Instant</button>
+
+                {/* Delivery */}
+                <button onClick={() => setDeliveryFilter(!deliveryFilter)} style={{
+                  padding: '7px 16px', borderRadius: 'var(--r-pill)', fontSize: 13, fontWeight: 500,
+                  background: deliveryFilter ? 'var(--accent)' : 'var(--surface-2)',
+                  color: deliveryFilter ? 'var(--text-inverse)' : 'var(--text-secondary)',
+                  border: deliveryFilter ? '1px solid var(--accent)' : '1px solid var(--border)',
+                  transition: 'all 0.15s',
+                }}>Delivery</button>
+
+                {/* Price dropdown */}
+                <button onClick={() => setShowFilters(true)} style={{
+                  padding: '7px 16px', borderRadius: 'var(--r-pill)', fontSize: 13, fontWeight: 500,
+                  background: maxPrice < 200 ? 'var(--accent)' : 'var(--surface-2)',
+                  color: maxPrice < 200 ? 'var(--text-inverse)' : 'var(--text-secondary)',
+                  border: maxPrice < 200 ? '1px solid var(--accent)' : '1px solid var(--border)',
+                  display: 'flex', alignItems: 'center', gap: 5, transition: 'all 0.15s',
+                }}>{maxPrice < 200 ? `Under $${maxPrice}` : 'Price'} <SlidersHorizontal size={12} /></button>
+
+                {/* More filters */}
+                <button onClick={() => setShowFilters(true)} style={{
+                  padding: '7px 16px', borderRadius: 'var(--r-pill)', fontSize: 13, fontWeight: 500,
+                  background: (makeFilter !== 'All' || transFilter !== 'All' || seatsFilter !== 'All') ? 'var(--accent)' : 'var(--surface-2)',
+                  color: (makeFilter !== 'All' || transFilter !== 'All' || seatsFilter !== 'All') ? 'var(--text-inverse)' : 'var(--text-secondary)',
+                  border: (makeFilter !== 'All' || transFilter !== 'All' || seatsFilter !== 'All') ? '1px solid var(--accent)' : '1px solid var(--border)',
+                  display: 'flex', alignItems: 'center', gap: 5, transition: 'all 0.15s',
+                }}>More filters {activeFilterCount > 0 && `(${activeFilterCount})`}</button>
+
+                {/* Reset */}
+                {activeFilterCount > 0 && (
+                  <button onClick={resetFilters} style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 500, padding: '7px 8px' }}>
+                    Clear all
+                  </button>
+                )}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+
+              {/* Result count + map toggle */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16, paddingBottom: 8, borderBottom: '0.5px solid var(--border)' }}>
+                <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
+                  {isLive && <span style={{ color: 'var(--success)', marginRight: 8 }}>Live data</span>}
+                  <span style={{ fontWeight: 600, color: 'var(--text)' }}>{filtered.length}</span> car{filtered.length !== 1 ? 's' : ''} available
+                </div>
                 {city && (
                   <div style={{ display: 'flex', background: 'var(--surface-2)', borderRadius: 'var(--r-pill)', padding: 2, border: '1px solid var(--border)' }}>
                     <button onClick={() => setShowMap(false)} style={{
@@ -551,7 +660,7 @@ export default function SearchTab({ onSelectCar }) {
                   </div>
                 )}
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
@@ -582,18 +691,10 @@ export default function SearchTab({ onSelectCar }) {
         </div>
       )}
 
-      {/* Desktop layout: sidebar filters + grid results */}
+      {/* Desktop layout: full-width grid results */}
       {isDesktop ? (
-        <div className="desktop-content">
-          <div className="desktop-search-layout">
-            {/* Sidebar filters */}
-            <div className="desktop-search-sidebar">
-              <div style={{ fontSize: 16, fontWeight: 700, fontFamily: 'var(--font-display)', marginBottom: 16 }}>Filters</div>
-              <FilterPanelContent />
-            </div>
-
-            {/* Main content */}
-            <div className="desktop-search-main">
+        <div className="desktop-content" style={{ paddingTop: 20 }}>
+            <div>
               {/* Map view */}
               {showMap && (
                 <div style={{ position: 'relative' }}>
@@ -646,7 +747,6 @@ export default function SearchTab({ onSelectCar }) {
                 </>
               )}
             </div>
-          </div>
         </div>
       ) : (
         <>

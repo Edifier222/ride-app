@@ -1,5 +1,5 @@
 // RIDE API Service — connects to Outdoorsy backend
-const SEARCH_API = 'https://search.outdoorsy.com';
+const SEARCH_API = 'https://search.staging.outdoorsy.com';
 const CORE_API = 'https://api.staging.outdoorsy.com/v0';
 const PARTNER_ID = 'yK2b7Kmdqp0f2wOo7JqWxt650LmNQjdU';
 
@@ -308,8 +308,10 @@ export async function createQuote({ rentalId, dateFrom, dateTo, token }) {
       headers: getAuthHeaders(token),
       body: JSON.stringify({
         rental_id: parseInt(rentalId),
-        date_from: dateFrom,
-        date_to: dateTo,
+        from: dateFrom,
+        to: dateTo,
+        reserve: true,
+        trip_credits_disabled: true,
       }),
     });
     const json = await res.json();
@@ -336,14 +338,18 @@ export async function getQuote(quoteId, token) {
   }
 }
 
-// Create a booking
-export async function createBooking({ quoteId, token }) {
+// Create a booking from a quote
+export async function createBooking({ quoteId, rentalId, dateFrom, dateTo, token }) {
   try {
     const res = await fetch(`${CORE_API}/bookings`, {
       method: 'POST',
       headers: getAuthHeaders(token),
       body: JSON.stringify({
         quote_id: quoteId,
+        rental_id: parseInt(rentalId),
+        from: dateFrom,
+        to: dateTo,
+        status: 'pending',
       }),
     });
     const json = await res.json();

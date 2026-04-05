@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronDown, ChevronRight, Shield, Check, Star, Lock, MapPin, Calendar, CreditCard, Smartphone, X, Fuel, Clock, Infinity, Truck, Edit3 } from 'lucide-react';
 import { protectionPlans } from '../../data/listings';
 import { useBooking } from '../../context/BookingContext';
+import { useAuth } from '../../context/AuthContext';
+import { createQuote, createBooking } from '../../services/api';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 
 export default function BookingFlow({ car, dates, onBack, onComplete }) {
   const [step, setStep] = useState(0); // 0=protection, 1=bill/addons, 2=questions, 3=payment
   const { updateBooking } = useBooking();
+  const { authToken } = useAuth();
 
   // Use dates passed from car detail, fallback to defaults
   const defaultStart = dates?.startDate || new Date().toISOString().split('T')[0];
@@ -60,10 +63,52 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
   const formatDate = (d) => new Date(d + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   const formatShort = (d) => new Date(d + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (processing) return;
     setProcessing(true);
-    const bookingId = 'RIDE-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+    let bookingId = 'RIDE-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    let realBooking = false;
+
+    // Try real API if we have a token and a real rental ID
+    if (authToken && car.id) {
+      try {
+        // 1. Create quote
+        const quote = await createQuote({
+          rentalId: car.id,
+          dateFrom: startDate,
+          dateTo: endDate,
+          token: authToken,
+        });
+
+        if (quote && quote.id) {
+          console.log('Real quote created:', quote.id, 'Total:', quote.total);
+
+          // 2. Try creating booking
+          try {
+            const booking = await createBooking({
+              quoteId: quote.id,
+              rentalId: car.id,
+              dateFrom: startDate,
+              dateTo: endDate,
+              token: authToken,
+            });
+            if (booking && booking.id) {
+              bookingId = String(booking.id);
+              realBooking = true;
+              console.log('Real booking created:', bookingId);
+            }
+          } catch (bookErr) {
+            console.log('Booking creation failed (staging may not allow), using quote data:', bookErr.message);
+            // Use quote ID as booking reference
+            bookingId = 'Q-' + quote.id.substring(0, 8).toUpperCase();
+          }
+        }
+      } catch (err) {
+        console.log('API booking failed, using mock:', err.message);
+      }
+    }
+
     const bookingData = {
       id: bookingId,
       vehicle: car,
@@ -73,9 +118,10 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
       total,
       protectionPlan: declineProtection ? 'Minimum' : plan.name,
       verified: false,
+      realBooking,
     };
-    // Brief spinner then navigate directly to trips
-    setTimeout(() => onComplete(bookingData), 600);
+
+    onComplete(bookingData);
   };
 
   // Sticky trip summary bar at top (Turo-style collapsible)

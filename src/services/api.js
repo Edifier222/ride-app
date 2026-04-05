@@ -105,15 +105,35 @@ function parseJsonApi(response) {
       images: (() => {
         const imgs = primaryImage ? [primaryImage.url, ...images.filter(u => u !== primaryImage.url)] : images;
         if (imgs.length > 0) return imgs;
-        // Fallback: Unsplash photos by vehicle type (allows hotlinking)
-        const type = attrs.type || 'car';
-        const fallbackByType = {
-          'suv': 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800&h=500&fit=crop',
-          'truck': 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=800&h=500&fit=crop',
-          'car': 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800&h=500&fit=crop',
-          'van': 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=800&h=500&fit=crop',
+        // Fallback: real editorial photos by make+model from Car and Driver
+        const nameLower = (attrs.name || '').toLowerCase();
+        const fallbackByModel = {
+          'corolla': 'https://hips.hearstapps.com/hmg-prod/images/2026-toyota-corolla-hybrid-se-awd-204-697a5f6d1689a.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'camry': 'https://hips.hearstapps.com/hmg-prod/images/2026-toyota-camry-se-hybrid-nightshade-fwd-155-695bf27312d0c.jpg?crop=0.77xw:0.64xh;0.16xw,0.26xh&resize=800:*',
+          'altima': 'https://hips.hearstapps.com/hmg-prod/images/2025-nissan-altima-sv-special-edition-9-695be69714b9a.jpg?crop=0.79xw:0.66xh;0.18xw,0.31xh&resize=800:*',
+          'sentra': 'https://hips.hearstapps.com/hmg-prod/images/2026-nissan-sentra-sl-105-699c7d5eb77f7.jpg?crop=0.8xw:0.68xh;0.1xw,0.22xh&resize=800:*',
+          'focus': 'https://hips.hearstapps.com/hmg-prod/images/2017-ford-focus-1557785498.jpg?crop=1xw:0.92xh;0,0.08xh&resize=800:*',
+          'fusion': 'https://hips.hearstapps.com/hmg-prod/images/2020-ford-fusion-mmp-1-1568742907.jpeg?crop=0.64xw:0.54xh;0.32xw,0.43xh&resize=800:*',
+          'soul': 'https://hips.hearstapps.com/hmg-prod/images/18861-2023-soul-1651667384.jpg?crop=0.61xw:0.65xh;0.19xw,0.28xh&resize=800:*',
+          'optima': 'https://hips.hearstapps.com/hmg-prod/images/2025-k5-03-65c4e39963e2d.jpg?crop=0.7xw:0.59xh;0.2xw,0.28xh&resize=800:*',
+          'elantra': 'https://hips.hearstapps.com/hmg-prod/images/2024-hyundai-elantra-limited-120-64ef85e5113c4.jpg?crop=0.76xw:0.65xh;0.12xw,0.32xh&resize=800:*',
+          'prius': 'https://hips.hearstapps.com/hmg-prod/images/2025-toyota-prius-xle-fwd-lt-470-68654d4ede4ae.jpg?crop=0.75xw:0.63xh;0.21xw,0.28xh&resize=800:*',
+          'santa fe': 'https://hips.hearstapps.com/hmg-prod/images/2024-hyundai-santa-fe-calligraphy-awd-101-6568a97b81a95.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'forester': 'https://hips.hearstapps.com/hmg-prod/images/2025-subaru-forester-touring-101-66c393e8ce3c0.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'f-150': 'https://hips.hearstapps.com/hmg-prod/images/2024-ford-f-150-xlt-402a-102-655c7e363e093.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'explorer': 'https://hips.hearstapps.com/hmg-prod/images/2025-ford-explorer-st-101-66e06b6f2cec3.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'yukon': 'https://hips.hearstapps.com/hmg-prod/images/2024-gmc-yukon-denali-ultimate-101-654daa1b5dc3d.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'suburban': 'https://hips.hearstapps.com/hmg-prod/images/2024-chevrolet-suburban-rst-101-6568ee74d8c00.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'trailblazer': 'https://hips.hearstapps.com/hmg-prod/images/2024-chevrolet-trailblazer-rs-101-6568ef6bcc5bb.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'trax': 'https://hips.hearstapps.com/hmg-prod/images/2024-chevrolet-trax-activ-102-64ec3e5fe6de3.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'lightning': 'https://hips.hearstapps.com/hmg-prod/images/2024-ford-f-150-lightning-flash-101-654c1b9d9a437.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'sequoia': 'https://hips.hearstapps.com/hmg-prod/images/2024-toyota-sequoia-trd-pro-101-654c16f79ca62.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'nsx': 'https://hips.hearstapps.com/hmg-prod/images/2024-acura-integra-type-s-102-64fed8e82a42c.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'xj': 'https://hips.hearstapps.com/hmg-prod/images/2024-jaguar-f-type-r-75-coupe-awd-101-6582a55f9f09e.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
+          'denali': 'https://hips.hearstapps.com/hmg-prod/images/2024-gmc-sierra-1500-at4x-aev-edition-101-65a20ebab2381.jpg?crop=0.6xw:0.5xh;0.2xw,0.36xh&resize=800:*',
         };
-        return [fallbackByType[type] || fallbackByType['car']];
+        const modelMatch = Object.keys(fallbackByModel).find(m => nameLower.includes(m));
+        return [modelMatch ? fallbackByModel[modelMatch] : 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800&h=500&fit=crop'];
       })(),
       features: Object.entries(attrs.FeaturesMap || {})
         .filter(([_, v]) => v === true || v === 'true')

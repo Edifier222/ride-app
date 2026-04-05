@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import { login as apiLogin, signup as apiSignup } from '../services/api';
+import jeffAvatar from '../assets/jeff-cavins.jpg';
 
 const AuthContext = createContext();
 
@@ -9,7 +10,7 @@ const DEMO_USER = {
   email: 'jeff@ride.com',
   firstName: 'Jeff',
   lastName: 'Cavins',
-  avatar: import.meta.env.BASE_URL + 'jeff-cavins.jpg',
+  avatar: jeffAvatar,
   phone: '+1 (555) 123-4567',
   joined: 'January 2025',
   verified: true,

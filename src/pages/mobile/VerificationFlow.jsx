@@ -9,43 +9,10 @@ export default function VerificationFlow({ onBack, onComplete }) {
   const [personaLoaded, setPersonaLoaded] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
-  // Try to load Persona SDK with timeout
+  // Go straight to manual verification flow
+  // Persona SDK iframe doesn't work reliably in PWA/mobile browsers
   useEffect(() => {
-    if (!authToken) {
-      setStep('fallback-front');
-      return;
-    }
-
-    // Timeout — if Persona doesn't load in 8 seconds, fall back
-    const timeout = setTimeout(() => {
-      if (step === 'loading' || step === 'persona') {
-        console.log('[RIDE] Persona timeout, using fallback');
-        setStep('fallback-front');
-      }
-    }, 8000);
-
-    // Load Persona SDK script
-    if (!window.Persona) {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.withpersona.com/dist/persona-v4.5.0.js';
-      script.async = true;
-      script.onload = () => {
-        console.log('[RIDE] Persona SDK loaded');
-        setPersonaLoaded(true);
-        startPersona();
-      };
-      script.onerror = () => {
-        console.log('[RIDE] Persona SDK failed to load, using fallback');
-        clearTimeout(timeout);
-        setStep('fallback-front');
-      };
-      document.head.appendChild(script);
-    } else {
-      setPersonaLoaded(true);
-      startPersona();
-    }
-
-    return () => clearTimeout(timeout);
+    setStep('fallback-front');
   }, []);
 
   const startPersona = async () => {

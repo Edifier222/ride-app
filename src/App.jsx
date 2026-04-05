@@ -16,6 +16,7 @@ import ListCarFlow from './pages/mobile/ListCarFlow';
 import TripDetailPage from './pages/mobile/TripDetailPage';
 import ChatScreen from './pages/mobile/ChatScreen';
 import HostProfilePage from './pages/mobile/HostProfilePage';
+import Footer from './components/Footer';
 import './styles/global.css';
 
 const TABS = [
@@ -385,6 +386,8 @@ function AppShell() {
           className={currentScreen ? 'page-enter' : ''}
         >
           {renderContent()}
+          {/* Desktop footer — show on tab-level pages */}
+          {isDesktop && showTabBar && <Footer />}
           {/* Bottom spacer for tab bar — mobile only */}
           {showTabBar && !isDesktop && <div style={{ height: 'var(--tab-height)' }} />}
         </div>

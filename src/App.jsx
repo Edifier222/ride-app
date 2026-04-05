@@ -18,6 +18,7 @@ import ChatScreen from './pages/mobile/ChatScreen';
 import HostProfilePage from './pages/mobile/HostProfilePage';
 import { HowItWorksPage, TrustSafetyPage, InsurancePage, CancellationPage, AboutPage, CareersPage, BlogPage } from './pages/mobile/ContentPages';
 import Footer from './components/Footer';
+import { useTheme } from './hooks/useTheme';
 import './styles/global.css';
 
 const TABS = [
@@ -205,6 +206,7 @@ const HostReviewsContent = (
 );
 
 function AppShell() {
+  useTheme();
   const [activeTab, setActiveTab] = useState('search');
   const [stack, setStack] = useState([]); // navigation stack for push/pop
   const [lastBooking, setLastBooking] = useState(null); // tracks the most recent booking

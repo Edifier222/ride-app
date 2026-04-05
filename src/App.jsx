@@ -32,13 +32,15 @@ const TABS = [
 function SubScreen({ title, onBack, children }) {
   return (
     <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 40 }}>
-      <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
-        <button onClick={onBack} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <ChevronLeft size={20} />
-        </button>
-        <span style={{ fontSize: 17, fontWeight: 600 }}>{title}</span>
+      <div style={{ maxWidth: 600, margin: '0 auto' }}>
+        <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
+          <button onClick={onBack} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ChevronLeft size={20} />
+          </button>
+          <span style={{ fontSize: 17, fontWeight: 600 }}>{title}</span>
+        </div>
+        <div style={{ padding: 16 }}>{children}</div>
       </div>
-      <div style={{ padding: 16 }}>{children}</div>
     </div>
   );
 }

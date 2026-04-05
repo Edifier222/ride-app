@@ -92,6 +92,25 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const loginWithToken = (token) => {
+    // Set user from a token (e.g. from Google OAuth)
+    // Decode basic info from JWT or just set minimal user
+    const now = new Date();
+    setUser({
+      id: 'google-user',
+      email: '',
+      firstName: 'Google',
+      lastName: 'User',
+      avatar: '',
+      phone: '',
+      joined: now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+      verified: false,
+      mode: 'guest',
+      token: token,
+    });
+    setShowAuth(false);
+  };
+
   const markVerified = () => {
     if (user) setUser(prev => ({ ...prev, verified: true }));
   };
@@ -116,6 +135,7 @@ export function AuthProvider({ children }) {
       isHost: user?.mode === 'host',
       isGuest: user?.mode === 'guest' || !user,
       authToken: user?.token || null,
+      loginWithToken,
       markVerified,
       login,
       signup,

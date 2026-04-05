@@ -440,6 +440,50 @@ export async function sendPhoneVerification(phone, token) {
   }
 }
 
+// Google OAuth — open popup to Outdoorsy's Google login
+export function startGoogleLogin() {
+  return new Promise((resolve, reject) => {
+    const url = `${CORE_API}/auth/google/login`;
+    const width = 500, height = 600;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+    const popup = window.open(url, 'google-login', `width=${width},height=${height},left=${left},top=${top}`);
+
+    if (!popup) {
+      // Popup blocked — redirect instead
+      window.location.href = url;
+      reject(new Error('Popup blocked'));
+      return;
+    }
+
+    // Poll the popup for the callback
+    const interval = setInterval(() => {
+      try {
+        if (popup.closed) {
+          clearInterval(interval);
+          reject(new Error('Login cancelled'));
+          return;
+        }
+        // Check if popup redirected back with a token
+        const popupUrl = popup.location.href;
+        if (popupUrl.includes('token=') || popupUrl.includes('/auth/google/callback')) {
+          clearInterval(interval);
+          const params = new URLSearchParams(popup.location.search || popup.location.hash.slice(1));
+          const token = params.get('token');
+          popup.close();
+          if (token) resolve({ token });
+          else reject(new Error('No token in callback'));
+        }
+      } catch (e) {
+        // Cross-origin — popup still on Google's domain, keep waiting
+      }
+    }, 500);
+
+    // Timeout after 2 minutes
+    setTimeout(() => { clearInterval(interval); popup.close(); reject(new Error('Login timeout')); }, 120000);
+  });
+}
+
 export async function finalizePhoneVerification(code, token) {
   try {
     const res = await fetch(`${CORE_API}/verify/phone/finalize`, {

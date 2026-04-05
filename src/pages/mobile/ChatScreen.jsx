@@ -19,7 +19,7 @@ export default function ChatScreen({ convo, onBack, onSendMessage }) {
   };
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)', maxWidth: 600, margin: '0 auto', width: '100%' }}>
       {/* Header */}
       <div style={{
         padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,

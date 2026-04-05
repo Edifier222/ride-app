@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, X, MapPin, Zap, Star, ChevronRight, SlidersHorizontal, Navigation, Map, List } from 'lucide-react';
-import { listings, cities } from '../../data/listings';
+import { listings as fakeListings, cities } from '../../data/listings';
+import { useSearch } from '../../hooks/useSearch';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 // leaflet CSS imported in global.css
@@ -105,34 +106,39 @@ export default function SearchTab({ onSelectCar }) {
   const mapInstanceRef = useRef(null);
 
   // Unique values from data
-  const allMakes = useMemo(() => Array.from(new Set(listings.map(l => l.make))).sort(), []);
+  const allMakes = useMemo(() => Array.from(new Set(apiResults.map(l => l.make).filter(Boolean))).sort(), [apiResults]);
   const brandModels = useMemo(() => {
     const map = {};
-    listings.forEach(l => { if (!map[l.make]) map[l.make] = new Set(); map[l.make].add(l.model); });
+    apiResults.forEach(l => { if (l.make) { if (!map[l.make]) map[l.make] = new Set(); if (l.model) map[l.make].add(l.model); } });
     return Object.fromEntries(Object.entries(map).map(([k, v]) => [k, Array.from(v).sort()]));
-  }, []);
-  const allFeatures = useMemo(() => Array.from(new Set(listings.flatMap(l => l.features))).sort(), []);
+  }, [apiResults]);
+  const allFeatures = useMemo(() => Array.from(new Set(apiResults.flatMap(l => l.features || []).filter(Boolean))).sort(), [apiResults]);
 
   // Search modal state
   const [searchCity, setSearchCity] = useState('');
   const [searchStart, setSearchStart] = useState('');
   const [searchEnd, setSearchEnd] = useState('');
 
+  // Fetch from API when city is set, fallback to fake data
+  const { results: apiResults, loading: searchLoading, isLive } = useSearch({
+    city, startDate, endDate, type: typeFilter,
+  });
+
+  // Apply client-side filters on top of API/fake results
   const filtered = useMemo(() => {
-    let result = [...listings];
-    if (city) result = result.filter(c => c.location.city.toLowerCase().includes(city.toLowerCase()));
+    let result = [...apiResults];
     if (fuelFilter !== 'All') result = result.filter(c => c.fuelType === fuelFilter);
-    if (typeFilter !== 'All') result = result.filter(c => c.type === typeFilter.toLowerCase());
+    if (typeFilter !== 'All' && !isLive) result = result.filter(c => c.type === typeFilter.toLowerCase());
     if (makeFilter !== 'All') result = result.filter(c => c.make === makeFilter);
     if (modelFilter !== 'All') result = result.filter(c => c.model === modelFilter);
     if (transFilter !== 'All') result = result.filter(c => c.transmission === transFilter);
     if (seatsFilter !== 'All') result = result.filter(c => String(c.seats) === seatsFilter);
     if (deliveryFilter) result = result.filter(c => c.delivery);
     if (instantFilter) result = result.filter(c => c.instantBook);
-    if (featureFilters.length > 0) result = result.filter(c => featureFilters.every(f => c.features.includes(f)));
+    if (featureFilters.length > 0) result = result.filter(c => featureFilters.every(f => c.features?.includes(f)));
     result = result.filter(c => c.pricePerDay <= maxPrice);
-    return result.sort((a, b) => b.rating - a.rating);
-  }, [city, maxPrice, typeFilter, fuelFilter, makeFilter, modelFilter, transFilter, seatsFilter, deliveryFilter, instantFilter, featureFilters]);
+    return result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  }, [apiResults, maxPrice, typeFilter, fuelFilter, makeFilter, modelFilter, transFilter, seatsFilter, deliveryFilter, instantFilter, featureFilters, isLive]);
 
   const activeFilterCount = [typeFilter !== 'All', fuelFilter !== 'All', makeFilter !== 'All', transFilter !== 'All', seatsFilter !== 'All', deliveryFilter, instantFilter, featureFilters.length > 0, maxPrice < 200].filter(Boolean).length;
 
@@ -429,9 +435,18 @@ export default function SearchTab({ onSelectCar }) {
 
       {/* Car list */}
       {!showMap && <div style={{ padding: '8px 16px' }}>
-        {filtered.length > 0 ? (
+        {/* Live data badge */}
+        {isLive && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, fontSize: 12, color: 'var(--success)' }}>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)' }} /> Live data · {filtered.length} cars
+        </div>}
+        {/* Loading */}
+        {searchLoading && <div style={{ textAlign: 'center', padding: '40px 0' }}>
+          <div style={{ width: 24, height: 24, border: '2px solid var(--surface-3)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+          <div style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>Searching...</div>
+        </div>}
+        {!searchLoading && filtered.length > 0 ? (
           filtered.map(car => <CarCard key={car.id} car={car} tripDays={startDate && endDate ? Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000) : 0} onTap={(id) => onSelectCar(id, { startDate, endDate })} />)
-        ) : (
+        ) : !searchLoading ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
               <Search size={28} color="var(--text-tertiary)" />
@@ -440,7 +455,7 @@ export default function SearchTab({ onSelectCar }) {
             <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 24 }}>Try a different location or adjust your filters</div>
             <button className="btn-secondary btn-sm" onClick={() => { setCity(''); setMaxPrice(600); setFuelFilter('All'); }}>Clear all filters</button>
           </div>
-        )}
+        ) : null}
       </div>}
 
       {/* ========== SEARCH MODAL ========== */}
@@ -465,7 +480,7 @@ export default function SearchTab({ onSelectCar }) {
               {suggestions.length > 0 && (
                 <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-sm)', border: '1px solid var(--border)', marginTop: 4, overflow: 'hidden' }}>
                   {suggestions.map(c => {
-                    const carCount = listings.filter(l => l.location.city === c.name).length;
+                    const carCount = fakeListings.filter(l => l.location.city === c.name).length;
                     const hasCars = carCount > 0;
                     return (
                       <button key={c.name} onClick={() => selectCity(c)} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', textAlign: 'left', borderBottom: '0.5px solid var(--border)', opacity: hasCars ? 1 : 0.7 }}>

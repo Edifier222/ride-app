@@ -3,7 +3,7 @@ import { listings } from './listings';
 
 export const guestTrips = [
   {
-    id: 'RIDE-A1B2C3',
+    id: '1787201',
     vehicle: listings[0], // Tesla Model Y
     startDate: '2026-04-10',
     endDate: '2026-04-13',
@@ -14,7 +14,7 @@ export const guestTrips = [
     hostMessage: "Looking forward to your trip! Pickup at my driveway. I'll send the address the day before.",
   },
   {
-    id: 'RIDE-D4E5F6',
+    id: '1786455',
     vehicle: listings[4], // Jeep Wrangler
     startDate: '2026-03-20',
     endDate: '2026-03-23',
@@ -26,7 +26,7 @@ export const guestTrips = [
     review: 'Amazing Jeep! Took it to Sedona and had the best time. Marcus was super helpful.',
   },
   {
-    id: 'RIDE-G7H8I9',
+    id: '1785902',
     vehicle: listings[6], // Corvette
     startDate: '2026-02-14',
     endDate: '2026-02-16',
@@ -38,7 +38,7 @@ export const guestTrips = [
     review: 'Bucket list car. PCH was incredible.',
   },
   {
-    id: 'RIDE-J0K1L2',
+    id: '1789334',
     vehicle: listings[15], // Tesla Model 3
     startDate: '2026-04-20',
     endDate: '2026-04-25',

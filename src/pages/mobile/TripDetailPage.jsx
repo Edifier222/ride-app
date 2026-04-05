@@ -306,18 +306,18 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
               Currently: <strong style={{ color: 'var(--text)' }}>{selectedPlan}</strong>
             </div>
 
-            {protectionPlans.map(plan => (
-              <button key={plan.id} onClick={() => setSelectedPlan(plan.name)} style={{
+            {protectionPlans.map(p => (
+              <button key={p.id} onClick={() => setSelectedPlan(p.name)} style={{
                 width: '100%', textAlign: 'left', padding: 16, marginBottom: 8,
                 background: 'var(--surface-2)', borderRadius: 'var(--r-sm)',
-                border: selectedPlan === plan.name ? '1.5px solid var(--accent)' : '1px solid var(--border)',
+                border: selectedPlan === p.name ? '1.5px solid var(--accent)' : '1px solid var(--border)',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 16, fontWeight: 600 }}>{plan.name}</span>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent-text)' }}>{plan.pricePerDay === 0 ? 'Free' : `$${plan.pricePerDay}/day`}</span>
+                  <span style={{ fontSize: 16, fontWeight: 600 }}>{p.name}</span>
+                  <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent-text)' }}>{fmt(p.pricePerDay)}/day</span>
                 </div>
-                <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>{plan.deductible} deductible · {plan.coverage}</div>
-                <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{plan.details.slice(0, 2).join(' · ')}</div>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>{p.deductible} deductible</div>
+                <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{(p.included || []).slice(0, 2).join(' · ')}</div>
               </button>
             ))}
 

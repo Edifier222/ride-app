@@ -10,7 +10,7 @@ const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { min
 export default function BookingFlow({ car, dates, onBack, onComplete }) {
   const [step, setStep] = useState(0); // 0=protection, 1=bill/addons, 2=questions, 3=payment
   const { updateBooking } = useBooking();
-  const { authToken } = useAuth();
+  const { authToken, user } = useAuth();
 
   // Use dates passed from car detail, fallback to defaults
   const defaultStart = dates?.startDate || new Date().toISOString().split('T')[0];
@@ -92,6 +92,9 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
               rentalId: car.id,
               dateFrom: startDate,
               dateTo: endDate,
+              firstName: user?.firstName,
+              lastName: user?.lastName,
+              email: user?.email,
               token: authToken,
             });
             if (booking && booking.id) {

@@ -345,7 +345,7 @@ export async function getQuote(quoteId, token) {
 }
 
 // Create a booking from a quote
-export async function createBooking({ quoteId, rentalId, dateFrom, dateTo, token }) {
+export async function createBooking({ quoteId, rentalId, dateFrom, dateTo, firstName, lastName, email, token }) {
   try {
     const res = await fetch(`${CORE_API}/bookings`, {
       method: 'POST',
@@ -355,7 +355,10 @@ export async function createBooking({ quoteId, rentalId, dateFrom, dateTo, token
         rental_id: parseInt(rentalId),
         from: dateFrom,
         to: dateTo,
-        status: 'pending',
+        status: 'negotiating',
+        first_name: firstName || '',
+        last_name: lastName || '',
+        email: email || '',
       }),
     });
     const json = await res.json();
@@ -378,6 +381,75 @@ export async function getBooking(bookingId, token) {
     return json;
   } catch (err) {
     console.error('Booking fetch error:', err);
+    throw err;
+  }
+}
+
+// Persona ID Verification
+const PERSONA_TEMPLATE_AUTO = 'itmpl_yGBvUKenYmQTWcRL9kpjtX1m8Ajz';
+const PERSONA_ENVIRONMENT = 'sandbox'; // staging uses sandbox
+
+export function getPersonaConfig() {
+  return {
+    templateId: PERSONA_TEMPLATE_AUTO,
+    environment: PERSONA_ENVIRONMENT,
+  };
+}
+
+// Get ID verification status / session
+export async function getIdVerification(token) {
+  try {
+    const res = await fetch(`${CORE_API}/drivers/id-verification`, {
+      headers: getAuthHeaders(token),
+    });
+    const json = await res.json();
+    if (!res.ok) return null;
+    return json;
+  } catch (err) {
+    console.error('ID verification fetch error:', err);
+    return null;
+  }
+}
+
+// Check if user's ID is verified
+export async function checkIdVerified(userId, token) {
+  try {
+    const res = await fetch(`${CORE_API}/verify/${userId}/id-verified`, {
+      headers: getAuthHeaders(token),
+    });
+    const json = await res.json();
+    return json;
+  } catch (err) {
+    console.error('ID verify check error:', err);
+    return null;
+  }
+}
+
+// Phone verification
+export async function sendPhoneVerification(phone, token) {
+  try {
+    const res = await fetch(`${CORE_API}/verify/phone`, {
+      method: 'POST',
+      headers: getAuthHeaders(token),
+      body: JSON.stringify({ phone }),
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Phone verify error:', err);
+    throw err;
+  }
+}
+
+export async function finalizePhoneVerification(code, token) {
+  try {
+    const res = await fetch(`${CORE_API}/verify/phone/finalize`, {
+      method: 'POST',
+      headers: getAuthHeaders(token),
+      body: JSON.stringify({ code }),
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Phone finalize error:', err);
     throw err;
   }
 }

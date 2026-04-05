@@ -105,44 +105,15 @@ function parseJsonApi(response) {
       images: (() => {
         const imgs = primaryImage ? [primaryImage.url, ...images.filter(u => u !== primaryImage.url)] : images;
         if (imgs.length > 0) return imgs;
-        // Fallback: real editorial photos from Car and Driver by make
-        const makeSlug = (attrs.name?.replace(/^\d{4}\s+/, '').split(' ')[0] || '').toLowerCase();
-        const fallbackByMake = {
-          'hyundai': 'https://hips.hearstapps.com/hmg-prod/images/2024-hyundai-santa-fe-calligraphy-awd-101-6568a97b81a95.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'toyota': 'https://hips.hearstapps.com/hmg-prod/images/2024-toyota-camry-xse-fwd-101-64d3cdab4b75f.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'chevrolet': 'https://hips.hearstapps.com/hmg-prod/images/2024-chevrolet-trax-activ-102-64ec3e5fe6de3.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'ford': 'https://hips.hearstapps.com/hmg-prod/images/2024-ford-f-150-xlt-402a-102-655c7e363e093.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'gmc': 'https://hips.hearstapps.com/hmg-prod/images/2024-gmc-sierra-1500-at4x-aev-edition-101-65a20ebab2381.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'subaru': 'https://hips.hearstapps.com/hmg-prod/images/2025-subaru-forester-touring-101-66c393e8ce3c0.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'jaguar': 'https://hips.hearstapps.com/hmg-prod/images/2024-jaguar-f-type-r-75-coupe-awd-101-6582a55f9f09e.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'acura': 'https://hips.hearstapps.com/hmg-prod/images/2024-acura-integra-type-s-102-64fed8e82a42c.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'honda': 'https://hips.hearstapps.com/hmg-prod/images/2024-honda-cr-v-hybrid-sport-touring-awd-101-64b87a0e31523.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'nissan': 'https://hips.hearstapps.com/hmg-prod/images/2024-nissan-rogue-sl-awd-101-654daa1b5dc3d.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'kia': 'https://hips.hearstapps.com/hmg-prod/images/2024-kia-ev6-gt-101-64e20781b8bfe.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'bmw': 'https://hips.hearstapps.com/hmg-prod/images/2024-bmw-x5-xdrive50e-101-6568ef6bcc5bb.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'mercedes-benz': 'https://hips.hearstapps.com/hmg-prod/images/2024-mercedes-benz-c-class-c300-101-654a5b1d94048.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'mercedes': 'https://hips.hearstapps.com/hmg-prod/images/2024-mercedes-benz-c-class-c300-101-654a5b1d94048.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'audi': 'https://hips.hearstapps.com/hmg-prod/images/2024-audi-a4-45-tfsi-quattro-s-line-101-6582a655e62b9.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'tesla': 'https://hips.hearstapps.com/hmg-prod/images/2026-tesla-model-y-long-range-awd-121-688bc237a2711.jpg?crop=0.6xw:0.5xh;0.1xw,0.3xh&resize=800:*',
-          'volkswagen': 'https://hips.hearstapps.com/hmg-prod/images/2024-volkswagen-id-4-pro-s-plus-101-654c1b9d9a437.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'jeep': 'https://hips.hearstapps.com/hmg-prod/images/2024-jeep-wrangler-rubicon-392-final-edition-102-6582a72893def.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'mazda': 'https://hips.hearstapps.com/hmg-prod/images/2024-mazda-cx-5-2-5-turbo-premium-plus-awd-101-652f8e3556bd1.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'volvo': 'https://hips.hearstapps.com/hmg-prod/images/2024-volvo-xc60-b5-ultimate-101-6582a7b866a58.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'cadillac': 'https://hips.hearstapps.com/hmg-prod/images/2024-cadillac-escalade-v-101-6568ee74d8c00.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'ram': 'https://hips.hearstapps.com/hmg-prod/images/2025-ram-1500-laramie-101-66e06c5ad9d5a.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'porsche': 'https://hips.hearstapps.com/hmg-prod/images/2024-porsche-911-carrera-gts-101-66e06c02367c4.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'lexus': 'https://hips.hearstapps.com/hmg-prod/images/2024-lexus-rx-350h-luxury-awd-101-654c16f79ca62.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'dodge': 'https://hips.hearstapps.com/hmg-prod/images/2024-dodge-hornet-r-t-plus-101-6582a8a2c5fe4.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'buick': 'https://hips.hearstapps.com/hmg-prod/images/2024-buick-enclave-avenir-101-65a1b8fbc9bfb.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'chrysler': 'https://hips.hearstapps.com/hmg-prod/images/2024-chrysler-pacifica-pinnacle-101-64f5e0eae7da7.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'land': 'https://hips.hearstapps.com/hmg-prod/images/2024-land-rover-defender-110-v-8-101-6582a99f96555.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'range': 'https://hips.hearstapps.com/hmg-prod/images/2024-land-rover-range-rover-sport-p400e-101-6582a9e2a16a7.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'rivian': 'https://hips.hearstapps.com/hmg-prod/images/2024-rivian-r1s-quad-motor-102-6582aa5e95e1d.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'lincoln': 'https://hips.hearstapps.com/hmg-prod/images/2024-lincoln-nautilus-reserve-101-654c18d9a40a1.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'infiniti': 'https://hips.hearstapps.com/hmg-prod/images/2024-infiniti-qx60-autograph-awd-101-654c1a1a73a6f.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
-          'genesis': 'https://hips.hearstapps.com/hmg-prod/images/2024-genesis-gv70-3-5t-sport-prestige-awd-101-6568ea8587c6f.jpg?crop=0.6xw:0.5xh;0.2xw,0.3xh&resize=800:*',
+        // Fallback: Unsplash photos by vehicle type (allows hotlinking)
+        const type = attrs.type || 'car';
+        const fallbackByType = {
+          'suv': 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800&h=500&fit=crop',
+          'truck': 'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=800&h=500&fit=crop',
+          'car': 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=800&h=500&fit=crop',
+          'van': 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=800&h=500&fit=crop',
         };
-        return [fallbackByMake[makeSlug] || fallbackByMake['toyota']];
+        return [fallbackByType[type] || fallbackByType['car']];
       })(),
       features: Object.entries(attrs.FeaturesMap || {})
         .filter(([_, v]) => v === true || v === 'true')

@@ -264,7 +264,7 @@ function AppShell() {
     if (currentScreen) {
       switch (currentScreen.screen) {
         case 'carDetail':
-          return <CarDetailPage carId={currentScreen.props.carId} searchDates={currentScreen.props.searchDates} onBack={pop} onBook={(car, dates) => push('booking', { car, dates })} onViewHost={(host) => push('hostProfile', { host })} isFavorite={favoriteIds.has(currentScreen.props.carId)} onToggleFavorite={() => toggleFavorite(currentScreen.props.carId)} />;
+          return <CarDetailPage carId={currentScreen.props.carId} carData={currentScreen.props.carData} searchDates={currentScreen.props.searchDates} onBack={pop} onBook={(car, dates) => push('booking', { car, dates })} onViewHost={(host) => push('hostProfile', { host })} isFavorite={favoriteIds.has(currentScreen.props.carId)} onToggleFavorite={() => toggleFavorite(currentScreen.props.carId)} />;
         case 'booking':
           return <BookingFlow car={currentScreen.props.car} dates={currentScreen.props.dates} onBack={pop} onComplete={(bookingData) => {
             setLastBooking(bookingData);
@@ -327,7 +327,7 @@ function AppShell() {
     }
 
     switch (activeTab) {
-      case 'search': return <SearchTab key={tabKey} onSelectCar={(id, searchDates) => push('carDetail', { carId: id, searchDates })} />;
+      case 'search': return <SearchTab key={tabKey} onSelectCar={(id, searchDates) => push('carDetail', { carId: id, searchDates, carData: searchDates?.car })} />;
       case 'favorites': return <FavoritesTab favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onSelectCar={(id) => push('carDetail', { carId: id })} />;
       case 'trips': return <TripsTab lastBooking={lastBooking} onVerify={() => push('verification')} onSelectTrip={(trip) => push('tripDetail', { trip })} />;
       case 'messages': return <MessagesTab conversations={conversations} onOpenChat={(convo) => push('chat', { convo })} />;

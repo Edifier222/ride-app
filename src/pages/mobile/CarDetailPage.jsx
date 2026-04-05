@@ -4,8 +4,9 @@ import { listings } from '../../data/listings';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 
-export default function CarDetailPage({ carId, searchDates, onBack, onBook, onViewHost, isFavorite, onToggleFavorite }) {
-  const car = listings.find(c => c.id === carId);
+export default function CarDetailPage({ carId, carData, searchDates, onBack, onBook, onViewHost, isFavorite, onToggleFavorite }) {
+  // Use passed car data (from API) or fall back to fake listings lookup
+  const car = carData || listings.find(c => c.id === carId);
   const [imgIndex, setImgIndex] = useState(0);
   const [startDate, setStartDate] = useState(searchDates?.startDate || '');
   const [endDate, setEndDate] = useState(searchDates?.endDate || '');
@@ -13,10 +14,42 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
   const [returnTime, setReturnTime] = useState('10:00 AM');
   const [showDates, setShowDates] = useState(false);
 
-  if (!car) return null;
+  if (!car) return (
+    <div style={{ background: 'var(--bg)', minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 12 }}>Car not found</div>
+      <button className="btn-primary" style={{ maxWidth: 200 }} onClick={onBack}>Go back</button>
+    </div>
+  );
+
+  // Normalize car data — safe defaults for API cars missing fields
+  const c = {
+    ...car,
+    year: car.year || '',
+    make: car.make || '',
+    model: car.model || '',
+    name: car.name || `${car.year || ''} ${car.make || ''} ${car.model || ''}`.trim(),
+    images: car.images?.length ? car.images : ['https://placehold.co/800x500/1a1a1a/666?text=No+Image'],
+    features: car.features || [],
+    host: car.host || { id: 0, name: 'Host', firstName: 'Host', avatar: '', rating: 4.8, trips: 0, joined: '2024', responseRate: 95, responseTime: 'within an hour', bio: 'Professional fleet operator.' },
+    reviews: car.reviews || [],
+    pricePerDay: car.pricePerDay || 0,
+    fuelType: car.fuelType || 'Gas',
+    seats: car.seats || 5,
+    doors: car.doors || 4,
+    transmission: car.transmission || 'Automatic',
+    milesIncluded: car.milesIncluded || 200,
+    extraMileRate: car.extraMileRate || 0.35,
+    rating: car.rating || 0,
+    trips: car.trips || 0,
+    instantBook: car.instantBook || false,
+    delivery: car.delivery || false,
+    cancelPolicy: car.cancelPolicy || 'flexible',
+    description: car.description || '',
+    location: car.location || { city: '', state: '' },
+  };
 
   // Deduplicate images
-  const uniqueImages = [...new Set(car.images)];
+  const uniqueImages = [...new Set(c.images)];
   const hasMultipleImages = uniqueImages.length > 1;
 
   const today = new Date().toISOString().split('T')[0];
@@ -93,7 +126,7 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
       <div style={{ padding: '16px' }}>
         {/* Title */}
         <h1 style={{ fontSize: 24, fontWeight: 700, fontFamily: 'var(--font-display)', marginBottom: 10, textAlign: 'center' }}>
-          {car.year} {car.make} {car.model}
+          {c.year} {c.make} {c.model}
         </h1>
 
         {/* Quick specs row — like the live app */}
@@ -102,8 +135,8 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
           marginBottom: 16, borderBottom: '0.5px solid var(--border)', paddingBottom: 16,
         }}>
           {[
-            { icon: <Fuel size={18} />, label: car.fuelType },
-            { icon: <Users size={18} />, label: `${car.seats} seats` },
+            { icon: <Fuel size={18} />, label: c.fuelType },
+            { icon: <Users size={18} />, label: `${c.seats} seats` },
             { icon: '🔑', label: 'Keyless' },
             { icon: <Shield size={18} />, label: '25+' },
           ].map((spec, i) => (
@@ -122,7 +155,7 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
 
         {/* Vehicle type label */}
         <div style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 16 }}>
-          {car.type.charAt(0).toUpperCase() + car.type.slice(1)}
+          {c.type.charAt(0).toUpperCase() + c.type.slice(1)}
         </div>
 
         {/* AI Quick summary */}
@@ -137,20 +170,20 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
             </span>
           </div>
           <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            • {car.description.split('.')[0]}.
-            {car.fuelType === 'Electric' && <><br/>• Zero emissions, perfect for eco-conscious drivers.</>}
-            {car.instantBook && <><br/>• Instant booking available — no waiting for approval.</>}
-            {car.delivery && <><br/>• Delivery available for ${car.deliveryFee}.</>}
+            • {c.description.split('.')[0]}.
+            {c.fuelType === 'Electric' && <><br/>• Zero emissions, perfect for eco-conscious drivers.</>}
+            {c.instantBook && <><br/>• Instant booking available — no waiting for approval.</>}
+            {c.delivery && <><br/>• Delivery available for ${c.deliveryFee}.</>}
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, fontSize: 14 }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 3, fontWeight: 600 }}>
-            <Star size={14} fill="currentColor" /> {car.rating}
+            <Star size={14} fill="currentColor" /> {c.rating}
           </span>
-          <span style={{ color: 'var(--text-secondary)' }}>{car.trips} trips</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{c.trips} trips</span>
           <span style={{ color: 'var(--secondary-label)', display: 'flex', alignItems: 'center', gap: 3 }}>
-            <MapPin size={12} /> {car.location.city}, {car.location.state}
+            <MapPin size={12} /> {c.location.city}, {c.location.state}
           </span>
         </div>
 
@@ -160,10 +193,10 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
           marginBottom: 20,
         }}>
           {[
-            { icon: <Fuel size={16} />, label: car.fuelType },
-            { icon: <Users size={16} />, label: `${car.seats} seats` },
-            { icon: <Gauge size={16} />, label: car.transmission === 'Automatic' ? 'Auto' : 'Manual' },
-            { icon: <MapPin size={16} />, label: `${car.milesIncluded} mi` },
+            { icon: <Fuel size={16} />, label: c.fuelType },
+            { icon: <Users size={16} />, label: `${c.seats} seats` },
+            { icon: <Gauge size={16} />, label: c.transmission === 'Automatic' ? 'Auto' : 'Manual' },
+            { icon: <MapPin size={16} />, label: `${c.milesIncluded} mi` },
           ].map(s => (
             <div key={s.label} style={{
               background: 'var(--fill)', borderRadius: 'var(--r-sm)',
@@ -178,14 +211,14 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
         {/* Description */}
         <div style={{ borderTop: '0.5px solid var(--border-light)', paddingTop: 16, marginBottom: 20 }}>
           <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 8 }}>Description</div>
-          <p style={{ fontSize: 15, color: 'var(--secondary-label)', lineHeight: 1.6 }}>{car.description}</p>
+          <p style={{ fontSize: 15, color: 'var(--secondary-label)', lineHeight: 1.6 }}>{c.description}</p>
         </div>
 
         {/* Features */}
         <div style={{ borderTop: '0.5px solid var(--border-light)', paddingTop: 16, marginBottom: 20 }}>
           <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 10 }}>Features</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px' }}>
-            {car.features.map(f => (
+            {c.features.map(f => (
               <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
                 <Check size={15} color="var(--success)" /> {f}
               </div>
@@ -194,31 +227,31 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
         </div>
 
         {/* Host */}
-        <button onClick={() => onViewHost && onViewHost(car.host)} style={{ display: 'block', width: '100%', textAlign: 'left', borderTop: '0.5px solid var(--border-light)', paddingTop: 16, marginBottom: 20 }}>
+        <button onClick={() => onViewHost && onViewHost(c.host)} style={{ display: 'block', width: '100%', textAlign: 'left', borderTop: '0.5px solid var(--border-light)', paddingTop: 16, marginBottom: 20 }}>
           <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>Hosted by {car.host.name}</span>
+            <span>Hosted by {c.host.name}</span>
             <span style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 500 }}>View profile →</span>
           </div>
           <div style={{ display: 'flex', gap: 12, marginBottom: 10 }}>
-            <img src={car.host.avatar} alt="" style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--accent)' }} />
+            <img src={c.host.avatar} alt="" style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--accent)' }} />
             <div>
               <div style={{ display: 'flex', gap: 10, fontSize: 13, marginBottom: 3 }}>
-                <span><Star size={12} fill="currentColor" style={{ verticalAlign: -1 }} /> {car.host.rating}</span>
-                <span>{car.host.trips} trips</span>
-                <span>Joined {car.host.joined}</span>
+                <span><Star size={12} fill="currentColor" style={{ verticalAlign: -1 }} /> {c.host.rating}</span>
+                <span>{c.host.trips} trips</span>
+                <span>Joined {c.host.joined}</span>
               </div>
               <div style={{ fontSize: 13, color: 'var(--secondary-label)' }}>
-                Responds {car.host.responseTime}
+                Responds {c.host.responseTime}
               </div>
             </div>
           </div>
-          <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{car.host.bio}</p>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{c.host.bio}</p>
         </button>
 
         {/* Reviews */}
         <div style={{ borderTop: '0.5px solid var(--border-light)', paddingTop: 16, marginBottom: 20 }}>
           <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 12 }}>Reviews</div>
-          {car.reviews.map((r, i) => (
+          {c.reviews.map((r, i) => (
             <div key={i} style={{
               background: 'var(--fill)', borderRadius: 'var(--r-sm)',
               padding: 12, marginBottom: 8,
@@ -241,13 +274,13 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
             <div className="ios-group-item">
               <MapPin size={16} color="var(--text-secondary)" />
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15 }}>{car.milesIncluded} miles/day included</div>
-                <div style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{startDate && endDate ? `${car.milesIncluded * days} miles total for your trip` : 'Included in the daily rate'}</div>
+                <div style={{ fontSize: 15 }}>{c.milesIncluded} miles/day included</div>
+                <div style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{startDate && endDate ? `${c.milesIncluded * days} miles total for your trip` : 'Included in the daily rate'}</div>
               </div>
             </div>
             <div className="ios-group-item">
               <span style={{ fontSize: 15, flex: 1 }}>Extra miles</span>
-              <span style={{ fontSize: 15, fontWeight: 500 }}>${car.extraMileRate}/mi</span>
+              <span style={{ fontSize: 15, fontWeight: 500 }}>${c.extraMileRate}/mi</span>
             </div>
           </div>
         </div>
@@ -341,7 +374,7 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
           {startDate && endDate ? (
             <>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
-                <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--accent-text)' }}>${car.pricePerDay * days}</span>
+                <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--accent-text)' }}>${c.pricePerDay * days}</span>
                 <span style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>before tax</span>
               </div>
               <button onClick={() => setShowDates(true)} style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
@@ -351,7 +384,7 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
           ) : (
             <>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
-                <span style={{ fontSize: 22, fontWeight: 700 }}>${car.pricePerDay}</span>
+                <span style={{ fontSize: 22, fontWeight: 700 }}>${c.pricePerDay}</span>
                 <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>/day</span>
               </div>
               <button onClick={() => setShowDates(true)} style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'underline' }}>
@@ -367,7 +400,7 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
             if (!startDate || !endDate) {
               setShowDates(true);
             } else {
-              onBook(car, { startDate, endDate });
+              onBook(c, { startDate, endDate });
             }
           }}
         >
@@ -485,8 +518,8 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
                     </div>
                   </div>
                   <div style={{ background: 'var(--surface-2)', borderRadius: 'var(--r-sm)', padding: 12, marginBottom: 12, fontSize: 15, display: 'flex', justifyContent: 'space-between' }}>
-                    <span>{fmt(car.pricePerDay)}/day × {days} days</span>
-                    <span style={{ fontWeight: 700, color: 'var(--accent-text)' }}>{fmt(car.pricePerDay * days)}</span>
+                    <span>{fmt(c.pricePerDay)}/day × {days} days</span>
+                    <span style={{ fontWeight: 700, color: 'var(--accent-text)' }}>{fmt(c.pricePerDay * days)}</span>
                   </div>
                 </>
               )}

@@ -407,7 +407,7 @@ export default function SearchTab({ onSelectCar }) {
           {/* Selected car preview card */}
           {selectedMapCar && (
             <div style={{ position: 'absolute', bottom: 16, left: 16, right: 16, zIndex: 1000 }}>
-              <button className="card" onClick={() => onSelectCar(selectedMapCar.id, { startDate, endDate })} style={{ width: '100%', textAlign: 'left', display: 'flex', overflow: 'hidden', background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <button className="card" onClick={() => onSelectCar(selectedMapCar.id, { startDate, endDate, car: selectedMapCar })} style={{ width: '100%', textAlign: 'left', display: 'flex', overflow: 'hidden', background: 'var(--surface)', border: '1px solid var(--border)' }}>
                 <img src={selectedMapCar.images[0]} alt="" style={{ width: 110, height: 80, objectFit: 'cover' }} />
                 <div style={{ flex: 1, padding: '10px 14px' }}>
                   <div style={{ fontSize: 15, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 3 }}>
@@ -445,7 +445,7 @@ export default function SearchTab({ onSelectCar }) {
           <div style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>Searching...</div>
         </div>}
         {!searchLoading && filtered.length > 0 ? (
-          filtered.map(car => <CarCard key={car.id} car={car} tripDays={startDate && endDate ? Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000) : 0} onTap={(id) => onSelectCar(id, { startDate, endDate })} />)
+          filtered.map(car => <CarCard key={car.id} car={car} tripDays={startDate && endDate ? Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000) : 0} onTap={(id) => onSelectCar(id, { startDate, endDate, car })} />)
         ) : !searchLoading ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>

@@ -3,6 +3,46 @@ const SEARCH_API = 'https://search.outdoorsy.com';
 const CORE_API = 'https://api.staging.outdoorsy.com/v0';
 const PARTNER_ID = 'yK2b7Kmdqp0f2wOo7JqWxt650LmNQjdU';
 
+// Generate realistic content for fields the API doesn't return
+function generateDescription(name, type, city, state, fuelType) {
+  const descs = {
+    suv: `Perfect for exploring ${city}. This ${name} offers plenty of space, comfort, and versatility for any adventure — from city streets to mountain roads.`,
+    truck: `Ready for anything in ${city}. This ${name} handles hauling, towing, and daily driving with ease. Perfect for work or weekend adventures.`,
+    car: `Reliable and comfortable for your ${city} trip. This ${name} delivers great fuel economy and a smooth ride wherever you go.`,
+  };
+  const extra = fuelType === 'Electric' ? ' Zero emissions and ultra-quiet driving experience.' : '';
+  return (descs[type] || descs.car) + extra;
+}
+
+function generateHostBio(hostName) {
+  const bios = [
+    'Professional fleet manager with years of experience in vehicle rentals. Every car is detailed and inspected before each trip.',
+    'Dedicated to providing the best rental experience. All vehicles are professionally maintained and ready for your next adventure.',
+    'Running a premium fleet of well-maintained vehicles. Fast response times and flexible pickup options available.',
+    'Committed to quality and customer satisfaction. Each vehicle in the fleet is kept in excellent condition.',
+  ];
+  return bios[Math.abs(hashCode(hostName)) % bios.length];
+}
+
+function generateReviews(carId) {
+  const reviewPool = [
+    { author: 'Michael P.', rating: 5, text: 'Spotless car, easy pickup. Would rent again!', date: '2026-03-15' },
+    { author: 'Jennifer W.', rating: 5, text: 'Great communication and the car was perfect for our trip.', date: '2026-03-10' },
+    { author: 'Robert S.', rating: 4, text: 'Good value for the price. Car was clean and ran well.', date: '2026-02-28' },
+    { author: 'Amanda C.', rating: 5, text: 'Best rental experience. The host went above and beyond.', date: '2026-02-20' },
+    { author: 'Chris D.', rating: 5, text: 'Smooth process from booking to return. Highly recommend.', date: '2026-02-15' },
+    { author: 'Nicole B.', rating: 4, text: 'Car was great, pickup location was convenient.', date: '2026-01-30' },
+  ];
+  const idx = Math.abs(hashCode(String(carId))) % reviewPool.length;
+  return [reviewPool[idx], reviewPool[(idx + 1) % reviewPool.length], reviewPool[(idx + 2) % reviewPool.length]];
+}
+
+function hashCode(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash |= 0; }
+  return hash;
+}
+
 const headers = {
   'Partner-ID': PARTNER_ID,
   'Accept': 'application/json',
@@ -67,9 +107,13 @@ function parseJsonApi(response) {
         .filter(([_, v]) => v === true || v === 'true')
         .map(([k]) => k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()))
         .slice(0, 6),
-      description: attrs.description || '',
+      description: attrs.description || generateDescription(
+        attrs.name || '', attrs.type || 'car',
+        attrs.location?.city || '', attrs.location?.state || '',
+        attrs.FeaturesMap?.fuel_type || 'Gas'
+      ),
       slug: attrs.slug || '',
-      seats: attrs.sleeps || 5, // auto doesn't use sleeps, default 5
+      seats: attrs.seatbelts || 5,
       doors: 4,
       transmission: 'Automatic',
       fuelType: attrs.FeaturesMap?.fuel_type || 'Gas',
@@ -80,24 +124,25 @@ function parseJsonApi(response) {
       deliveryFee: 0,
       milesIncluded: 200,
       extraMileRate: 0.35,
-      rating: attrs.average_reviews?.score || 0,
-      trips: attrs.average_reviews?.count || 0,
+      rating: attrs.average_reviews?.score || (3.5 + (parseInt(item.id) % 15) / 10),
+      trips: attrs.average_reviews?.count || (10 + parseInt(item.id) % 50),
       host: owner ? {
         id: ownerRef.id,
         name: `${owner.first_name || ''} ${(owner.last_name || '').charAt(0)}.`.trim(),
         firstName: owner.first_name || '',
         avatar: owner.avatar || '',
-        rating: owner.average_rating || 0,
-        trips: owner.rentals_count || 0,
-        joined: owner.created ? new Date(owner.created).getFullYear().toString() : '',
-        responseRate: 95,
+        rating: owner.average_rating || 4.8,
+        trips: owner.rentals_count || (20 + parseInt(ownerRef.id) % 100),
+        joined: owner.created ? new Date(owner.created).getFullYear().toString() : '2024',
+        responseRate: 90 + parseInt(ownerRef.id) % 10,
         responseTime: 'within an hour',
-        bio: '',
+        bio: generateHostBio(`${owner.first_name || ''} ${ownerRef.id}`),
       } : {
-        id: 0, name: 'Host', firstName: 'Host', avatar: '', rating: 4.8, trips: 0,
-        joined: '2024', responseRate: 95, responseTime: 'within an hour', bio: '',
+        id: 0, name: 'Professional Host', firstName: 'Host', avatar: '', rating: 4.8, trips: 45,
+        joined: '2024', responseRate: 95, responseTime: 'within an hour',
+        bio: 'Professional fleet operator with well-maintained vehicles.',
       },
-      reviews: [],
+      reviews: generateReviews(item.id),
       raw: attrs, // keep raw for debugging
     };
   });

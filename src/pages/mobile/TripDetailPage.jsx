@@ -12,8 +12,6 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
   const isCompleted = trip.status === 'completed';
 
   const [showCancel, setShowCancel] = useState(false);
-  const [showModifyProtection, setShowModifyProtection] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState(trip.protectionPlan || 'Standard');
   const [cancelled, setCancelled] = useState(false);
 
   // Dynamic countdown
@@ -100,22 +98,70 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
             { icon: <Calendar size={16} />, label: 'Dates', value: `${new Date(trip.startDate + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${new Date(trip.endDate + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` },
             { icon: <Clock size={16} />, label: 'Pick-up time', value: '10:00 AM' },
             { icon: <MapPin size={16} />, label: 'Pick-up', value: `${v.location.city}, ${v.location.state}` },
-            { icon: <Shield size={16} />, label: 'Protection', value: trip.protectionPlan, action: (isUpcoming || isPending) ? () => setShowModifyProtection(true) : null },
-            { icon: <DollarSign size={16} />, label: 'Total', value: fmt(trip.total), bold: true },
+            { icon: <Shield size={16} />, label: 'Protection', value: trip.protectionPlan },
           ].map((item, i) => (
-            <button key={item.label} onClick={item.action} disabled={!item.action} style={{
-              width: '100%', display: 'flex', alignItems: 'center', padding: '14px 16px',
+            <div key={item.label} style={{
+              display: 'flex', alignItems: 'center', padding: '14px 16px',
               borderTop: i > 0 ? '0.5px solid var(--border)' : 'none',
             }}>
               <span style={{ color: 'var(--text-secondary)', marginRight: 12 }}>{item.icon}</span>
-              <span style={{ flex: 1, fontSize: 15, textAlign: 'left' }}>{item.label}</span>
-              <span style={{ fontSize: 15, fontWeight: item.bold ? 700 : 500, color: item.bold ? 'var(--accent-text)' : 'var(--text)' }}>{item.value}</span>
-              {item.action && <Edit3 size={14} color="var(--accent)" style={{ marginLeft: 8 }} />}
-            </button>
+              <span style={{ flex: 1, fontSize: 15 }}>{item.label}</span>
+              <span style={{ fontSize: 15, fontWeight: 500 }}>{item.value}</span>
+            </div>
           ))}
           <div style={{ padding: '8px 16px 14px', fontSize: 12, color: 'var(--text-tertiary)' }}>
             Booking #{trip.id}
           </div>
+        </div>
+
+        {/* Price breakdown */}
+        {(() => {
+          const days = Math.max(Math.ceil((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000), 1);
+          const vehicleCost = v.pricePerDay * days;
+          const protRate = trip.protectionPlan === 'Auto Essential' ? 40 : 25;
+          const protCost = protRate * days;
+          const taxRates = { AZ: 0.056, CA: 0.0725, FL: 0.06, TX: 0.0625, NY: 0.08, CO: 0.029, WA: 0.065, NV: 0.0685 };
+          const taxRate = taxRates[v.location?.state] || 0.06;
+          const subtotal = vehicleCost + protCost;
+          const tax = Math.round(subtotal * taxRate);
+          const total = subtotal + tax;
+          return (
+            <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: 16, marginBottom: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', marginBottom: 12 }}>PRICE BREAKDOWN</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 8 }}>
+                <span>{fmt(v.pricePerDay)}/day × {days} days</span><span>{fmt(vehicleCost)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 8 }}>
+                <span>{trip.protectionPlan} protection</span><span>{fmt(protCost)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 8 }}>
+                <span>Tax ({v.location?.state} {(taxRate * 100).toFixed(1)}%)</span><span>{fmt(tax)}</span>
+              </div>
+              <div style={{ borderTop: '0.5px solid var(--border)', paddingTop: 10, marginTop: 4, display: 'flex', justifyContent: 'space-between', fontSize: 17, fontWeight: 700 }}>
+                <span>Total</span><span style={{ color: 'var(--accent-text)' }}>{fmt(total)}</span>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Documents */}
+        <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '14px 16px 0' }}>DOCUMENTS</div>
+          {[
+            { icon: '🪪', label: 'Insurance card' },
+            { icon: '🧾', label: 'Receipt' },
+            { icon: '📄', label: 'Rental agreement' },
+          ].map((doc, i) => (
+            <button key={doc.label} style={{
+              width: '100%', display: 'flex', alignItems: 'center', gap: 12,
+              padding: '14px 16px', borderTop: i > 0 ? '0.5px solid var(--border)' : 'none',
+              textAlign: 'left',
+            }}>
+              <span style={{ fontSize: 18 }}>{doc.icon}</span>
+              <span style={{ flex: 1, fontSize: 15 }}>{doc.label}</span>
+              <ChevronRight size={16} color="var(--text-tertiary)" />
+            </button>
+          ))}
         </div>
 
         {/* Actions for active trips */}
@@ -291,42 +337,6 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
         </>
       )}
 
-      {/* ===== MODIFY PROTECTION MODAL ===== */}
-      {showModifyProtection && (
-        <>
-          <div className="sheet-backdrop" onClick={() => setShowModifyProtection(false)} />
-          <div className="sheet" style={{ padding: '0 20px 24px', maxHeight: '80vh' }}>
-            <div className="sheet-handle" />
-            <div style={{ padding: '20px 0 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--font-display)' }}>Change protection</span>
-              <button onClick={() => setShowModifyProtection(false)}><X size={20} /></button>
-            </div>
-
-            <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
-              Currently: <strong style={{ color: 'var(--text)' }}>{selectedPlan}</strong>
-            </div>
-
-            {protectionPlans.map(p => (
-              <button key={p.id} onClick={() => setSelectedPlan(p.name)} style={{
-                width: '100%', textAlign: 'left', padding: 16, marginBottom: 8,
-                background: 'var(--surface-2)', borderRadius: 'var(--r-sm)',
-                border: selectedPlan === p.name ? '1.5px solid var(--accent)' : '1px solid var(--border)',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 16, fontWeight: 600 }}>{p.name}</span>
-                  <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent-text)' }}>{fmt(p.pricePerDay)}/day</span>
-                </div>
-                <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 6 }}>{p.deductible} deductible</div>
-                <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{(p.included || []).slice(0, 2).join(' · ')}</div>
-              </button>
-            ))}
-
-            <button onClick={() => setShowModifyProtection(false)} className="btn-primary" style={{ marginTop: 8 }}>
-              Save changes
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
 }

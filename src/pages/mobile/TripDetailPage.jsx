@@ -170,8 +170,16 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
         {/* Actions for active trips */}
         {(isPending || isUpcoming) && (
           <>
-            {/* Verify ID */}
-            {!user?.verified && !trip.verified && (
+            {/* Driver verification status */}
+            {user?.verified || trip.verified ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: '16px 18px', marginBottom: 10 }}>
+                <CheckCircle size={20} color="var(--success)" />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600 }}>Verified driver</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Your identity has been verified</div>
+                </div>
+              </div>
+            ) : (
               <button onClick={onVerify} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: '16px 18px', marginBottom: 10, textAlign: 'left' }}>
                 <span style={{ fontSize: 24 }}>🪪</span>
                 <div style={{ flex: 1 }}>
@@ -181,6 +189,16 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
                 <ChevronRight size={16} color="var(--text-tertiary)" />
               </button>
             )}
+
+            {/* Add additional driver */}
+            <button style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: '16px 18px', marginBottom: 10, textAlign: 'left' }}>
+              <span style={{ fontSize: 24 }}>👤</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: 600 }}>Add additional driver</div>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Additional drivers must also be verified</div>
+              </div>
+              <ChevronRight size={16} color="var(--text-tertiary)" />
+            </button>
 
             {/* Cancellation policy */}
             <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: '16px 18px', marginBottom: 10 }}>

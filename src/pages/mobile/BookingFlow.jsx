@@ -4,11 +4,13 @@ import { protectionPlans } from '../../data/listings';
 import { useBooking } from '../../context/BookingContext';
 import { useAuth } from '../../context/AuthContext';
 import { createQuote, createBooking } from '../../services/api';
+import useIsDesktop from '../../hooks/useIsDesktop';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 
 export default function BookingFlow({ car, dates, onBack, onComplete }) {
-  const [step, setStep] = useState(0); // 0=protection, 1=bill/addons, 2=questions, 3=payment
+  const isDesktop = useIsDesktop();
+  const [step, setStep] = useState(0); // 0=protection, 1=bill/addons, 2=questions, 3=payment, 4=confirmation
   const { updateBooking } = useBooking();
   const { authToken, user } = useAuth();
 
@@ -29,6 +31,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
   const [declineProtection, setDeclineProtection] = useState(false);
   const [payMethod, setPayMethod] = useState('card');
   const [processing, setProcessing] = useState(false);
+  const [confirmedBooking, setConfirmedBooking] = useState(null);
 
   const [addons, setAddons] = useState({
     delivery: false,
@@ -125,7 +128,9 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
       realBooking,
     };
 
-    onComplete(bookingData);
+    setConfirmedBooking(bookingData);
+    setStep(4);
+    setProcessing(false);
   };
 
   // Sticky trip summary bar at top (Turo-style collapsible)
@@ -711,6 +716,87 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
           ) : `Submit request · ${fmt(total)}`}
         </button>
       )}
+    </div>
+  );
+
+  // ==================
+  // STEP 4: CONFIRMATION
+  // ==================
+  if (step === 4 && confirmedBooking) return (
+    <div style={{ background: 'var(--bg)', minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px', textAlign: 'center' }}>
+        {/* Success animation */}
+        <div style={{
+          width: 80, height: 80, borderRadius: '50%',
+          background: 'var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          marginBottom: 24, animation: 'fadeIn 0.4s ease',
+          boxShadow: '0 8px 32px rgba(45,159,111,0.3)',
+        }}>
+          <Check size={40} color="#fff" strokeWidth={3} />
+        </div>
+
+        <h1 style={{ fontSize: 26, fontWeight: 700, fontFamily: 'var(--font-display)', marginBottom: 8 }}>
+          Booking request sent!
+        </h1>
+        <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: 340, marginBottom: 32 }}>
+          Your request has been sent to {car.host?.name || 'the host'}. They have 24 hours to accept. You won't be charged until confirmed.
+        </p>
+
+        {/* Booking summary card */}
+        <div style={{
+          width: '100%', maxWidth: 400,
+          background: 'var(--surface)', border: '1px solid var(--border)',
+          borderRadius: 'var(--r-md)', padding: 20, textAlign: 'left', marginBottom: 24,
+        }}>
+          <div style={{ display: 'flex', gap: 14, marginBottom: 16 }}>
+            {car.images?.[0] && (
+              <img src={car.images[0]} alt="" style={{ width: 80, height: 56, objectFit: 'cover', borderRadius: 'var(--r-sm)' }} />
+            )}
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 600, fontFamily: 'var(--font-display)' }}>
+                {car.year} {car.make} {car.model}
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 2 }}>
+                Hosted by {car.host?.name || 'Host'}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 14 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Calendar size={14} /> Dates
+              </span>
+              <span style={{ fontWeight: 500 }}>{formatShort(startDate)} – {formatShort(endDate)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Shield size={14} /> Protection
+              </span>
+              <span style={{ fontWeight: 500 }}>{confirmedBooking.protectionPlan}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 10, borderTop: '0.5px solid var(--border)' }}>
+              <span style={{ fontWeight: 600 }}>Total</span>
+              <span style={{ fontWeight: 700, color: 'var(--accent-text)', fontSize: 18 }}>{fmt(confirmedBooking.total)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Booking ID */}
+        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 24 }}>
+          Booking reference: <span style={{ fontFamily: 'ui-monospace, monospace', color: 'var(--text-secondary)' }}>#{confirmedBooking.id}</span>
+        </div>
+
+        {/* Actions */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 340 }}>
+          <button className="btn-primary" style={{ maxWidth: 'none' }} onClick={() => onComplete(confirmedBooking)}>
+            View my trips
+          </button>
+          <button className="btn-secondary" style={{ maxWidth: 'none' }} onClick={onBack}>
+            Back to browsing
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

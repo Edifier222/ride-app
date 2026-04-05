@@ -50,21 +50,32 @@ export default function TripsTab({ lastBooking, onVerify, onSelectTrip }) {
           <ChevronRight size={18} color="var(--text-tertiary)" style={{ alignSelf: 'center' }} />
         </div>
 
-        {/* Verify prompt for pending */}
-        {trip.status === 'pending' && !isVerified && !trip.verified && (
-          <div style={{ padding: '0 16px 14px' }}>
-            <button
-              onClick={(e) => { e.stopPropagation(); onVerify(); }}
-              style={{
-                width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-                background: 'var(--warning-bg)', padding: '10px 12px', borderRadius: 'var(--r-sm)',
-                fontSize: 13, color: 'var(--warning)',
-              }}
-            >
-              <span>🪪</span>
-              <span style={{ flex: 1, textAlign: 'left' }}>Verify ID to confirm trip</span>
-              <ChevronRight size={14} />
-            </button>
+        {/* Driver status + actions */}
+        {(trip.status === 'pending' || trip.status === 'upcoming' || trip.status === 'negotiating') && (
+          <div style={{ padding: '0 16px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {isVerified || trip.verified ? (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                background: 'var(--success-bg)', padding: '10px 12px', borderRadius: 'var(--r-sm)',
+                fontSize: 13, color: 'var(--success)',
+              }}>
+                <CheckCircle size={14} />
+                <span>Verified driver</span>
+              </div>
+            ) : (
+              <button
+                onClick={(e) => { e.stopPropagation(); onVerify(); }}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+                  background: 'var(--warning-bg)', padding: '10px 12px', borderRadius: 'var(--r-sm)',
+                  fontSize: 13, color: 'var(--warning)',
+                }}
+              >
+                <span>🪪</span>
+                <span style={{ flex: 1, textAlign: 'left' }}>Verify ID to confirm trip</span>
+                <ChevronRight size={14} />
+              </button>
+            )}
           </div>
         )}
       </button>

@@ -291,6 +291,20 @@ function AppShell() {
           return <SubScreen title="Earnings" onBack={pop}>{EarningsContent}</SubScreen>;
         case 'hostReviews':
           return <SubScreen title="Reviews" onBack={pop}>{HostReviewsContent}</SubScreen>;
+        case 'howItWorks':
+          return <HowItWorksPage onBack={pop} />;
+        case 'trustSafety':
+          return <TrustSafetyPage onBack={pop} />;
+        case 'insurance':
+          return <InsurancePage onBack={pop} />;
+        case 'cancellation':
+          return <CancellationPage onBack={pop} />;
+        case 'about':
+          return <AboutPage onBack={pop} />;
+        case 'careers':
+          return <CareersPage onBack={pop} />;
+        case 'blog':
+          return <BlogPage onBack={pop} />;
         case 'chat':
           return <ChatScreen convo={currentScreen.props.convo} onBack={pop} onSendMessage={(convoId, msg) => {
             setConversations(prev => {

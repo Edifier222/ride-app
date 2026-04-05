@@ -18,7 +18,7 @@ const DEMO_USER = {
 };
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null); // Start logged out — must sign up or log in
+  const [user, setUser] = useState({ ...DEMO_USER }); // Start with Jeff Cavins demo, log out to use real API
   const [showAuth, setShowAuth] = useState(false);
   const [authTab, setAuthTab] = useState('login');
   const [authError, setAuthError] = useState('');

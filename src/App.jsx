@@ -204,10 +204,7 @@ const HostReviewsContent = (
   </div>
 );
 
-import { useTheme } from './hooks/useTheme';
-
 function AppShell() {
-  useTheme(); // Initialize theme on app load
   const [activeTab, setActiveTab] = useState('search');
   const [stack, setStack] = useState([]); // navigation stack for push/pop
   const [lastBooking, setLastBooking] = useState(null); // tracks the most recent booking

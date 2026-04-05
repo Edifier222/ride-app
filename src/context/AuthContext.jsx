@@ -9,7 +9,7 @@ const DEMO_USER = {
   email: 'jeff@ride.com',
   firstName: 'Jeff',
   lastName: 'Cavins',
-  avatar: '/jeff-cavins.jpg',
+  avatar: import.meta.env.BASE_URL + 'jeff-cavins.jpg',
   phone: '+1 (555) 123-4567',
   joined: 'January 2025',
   verified: true,

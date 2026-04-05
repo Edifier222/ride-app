@@ -170,7 +170,7 @@ export default function TripsTab({ lastBooking, onVerify, onSelectTrip }) {
         const days = Math.max(Math.ceil((new Date(t.endDate) - new Date(t.startDate)) / 86400000), 1);
         const dailyRate = v.pricePerDay;
         const vehicleCost = dailyRate * days;
-        const protectionRate = t.protectionPlan === 'Premier' ? 30 : t.protectionPlan === 'Standard' ? 15 : 0;
+        const protectionRate = t.protectionPlan === 'Auto Essential' ? 40 : t.protectionPlan === 'Auto Basic' ? 25 : 25;
         const protectionCost = protectionRate * days;
         const taxRates = { AZ: 0.056, CA: 0.0725, FL: 0.06, TX: 0.0625, NY: 0.08, CO: 0.029, WA: 0.065, NV: 0.0685 };
         const taxRate = taxRates[v.location?.state] || 0.06;

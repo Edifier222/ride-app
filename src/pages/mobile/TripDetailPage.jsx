@@ -249,7 +249,7 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
               <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '14px 16px 0' }}>RECEIPT</div>
               {[
                 { label: `${fmt(v.pricePerDay).replace('$','')}/day × ${Math.ceil((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000)} days`, value: fmt(v.pricePerDay * Math.ceil((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000)) },
-                { label: 'Protection (' + trip.protectionPlan + ')', value: trip.protectionPlan === 'Standard' ? '$45' : trip.protectionPlan === 'Premier' ? '$90' : '$0' },
+                { label: (trip.protectionPlan || 'Auto Basic') + ' protection', value: fmt((trip.protectionPlan === 'Auto Essential' ? 40 : 25) * Math.ceil((new Date(trip.endDate) - new Date(trip.startDate)) / 86400000)) },
                 { label: 'Service fee', value: fmt(Math.round(trip.total * 0.12)) },
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 16px', fontSize: 14, color: 'var(--text-secondary)' }}>

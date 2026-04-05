@@ -10,6 +10,8 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
   const [liked, setLiked] = useState(false);
   const [startDate, setStartDate] = useState(searchDates?.startDate || '');
   const [endDate, setEndDate] = useState(searchDates?.endDate || '');
+  const [pickupTime, setPickupTime] = useState('10:00 AM');
+  const [returnTime, setReturnTime] = useState('10:00 AM');
   const [showDates, setShowDates] = useState(false);
 
   if (!car) return null;
@@ -458,15 +460,31 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
                 })}
               </div>
 
-              {/* Price preview + confirm */}
+              {/* Time pickers + Price preview — show after dates selected */}
               {startDate && endDate && (
-                <div style={{ background: 'var(--surface-2)', borderRadius: 'var(--r-sm)', padding: 12, marginBottom: 12, fontSize: 15, display: 'flex', justifyContent: 'space-between' }}>
-                  <span>${car.pricePerDay} x {days} days</span>
-                  <span style={{ fontWeight: 700, color: 'var(--accent-text)' }}>${car.pricePerDay * days}</span>
-                </div>
+                <>
+                  <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.05em', marginBottom: 4 }}>PICK-UP TIME</div>
+                      <select value={pickupTime} onChange={e => setPickupTime(e.target.value)} className="ios-input" style={{ fontSize: 15 }}>
+                        {['8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM'].map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.05em', marginBottom: 4 }}>RETURN TIME</div>
+                      <select value={returnTime} onChange={e => setReturnTime(e.target.value)} className="ios-input" style={{ fontSize: 15 }}>
+                        {['8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM'].map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div style={{ background: 'var(--surface-2)', borderRadius: 'var(--r-sm)', padding: 12, marginBottom: 12, fontSize: 15, display: 'flex', justifyContent: 'space-between' }}>
+                    <span>{fmt(car.pricePerDay)}/day × {days} days</span>
+                    <span style={{ fontWeight: 700, color: 'var(--accent-text)' }}>{fmt(car.pricePerDay * days)}</span>
+                  </div>
+                </>
               )}
               <button className="btn-primary" onClick={() => setShowDates(false)} disabled={!startDate || !endDate}>
-                {startDate && endDate ? 'Confirm dates' : !startDate ? 'Select pick-up date' : 'Select return date'}
+                {startDate && endDate ? 'Confirm' : !startDate ? 'Select pick-up date' : 'Select return date'}
               </button>
             </div>
           </>

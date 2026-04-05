@@ -79,7 +79,7 @@ export default function VerificationFlow({ onBack, onComplete }) {
 
   // Done screen
   if (step === 'done') return (
-    <div style={{ minHeight: '100%', background: 'var(--bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+    <div style={{ minHeight: '100%', background: 'var(--bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32, maxWidth: 680, margin: '0 auto' }}>
       <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(52,199,89,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
         <CheckCircle size={44} color="var(--success)" />
       </div>
@@ -93,7 +93,7 @@ export default function VerificationFlow({ onBack, onComplete }) {
 
   // Loading / Persona active
   if (step === 'loading' || step === 'persona') return (
-    <div style={{ minHeight: '100%', background: 'var(--bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+    <div style={{ minHeight: '100%', background: 'var(--bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32, maxWidth: 680, margin: '0 auto' }}>
       <div style={{ width: 24, height: 24, border: '2px solid var(--surface-3)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', marginBottom: 16 }} />
       <div style={{ fontSize: 15, color: 'var(--text-secondary)', marginBottom: 20 }}>
         {step === 'loading' ? 'Loading verification...' : 'Verification in progress...'}
@@ -108,7 +108,7 @@ export default function VerificationFlow({ onBack, onComplete }) {
   const stepIndex = { 'fallback-front': 0, 'fallback-back': 1, 'fallback-selfie': 2, 'fallback-review': 3 };
 
   return (
-    <div style={{ minHeight: '100%', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100%', background: 'var(--bg)', maxWidth: 680, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={step === 'fallback-front' ? onBack : () => {

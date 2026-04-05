@@ -31,7 +31,7 @@ export default function ListCarFlow({ onBack, onComplete }) {
 
   // Done
   if (step === 3) return (
-    <div style={{ minHeight: '100%', background: 'var(--white)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+    <div style={{ minHeight: '100%', background: 'var(--white)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32, maxWidth: 680, margin: '0 auto' }}>
       <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'var(--black)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
         <Check size={36} color="white" />
       </div>
@@ -45,7 +45,7 @@ export default function ListCarFlow({ onBack, onComplete }) {
 
   // Step 1: Vehicle info
   if (step === 0) return (
-    <div style={{ minHeight: '100%', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100%', background: 'var(--bg)', maxWidth: 680, margin: '0 auto' }}>
       {header('Vehicle details')}
       <div style={{ padding: 16 }}>
         <div style={{ background: 'var(--card-bg)', borderRadius: 'var(--r-md)', padding: 16, marginBottom: 12 }}>
@@ -80,7 +80,7 @@ export default function ListCarFlow({ onBack, onComplete }) {
 
   // Step 2: Photos & Pricing
   if (step === 1) return (
-    <div style={{ minHeight: '100%', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100%', background: 'var(--bg)', maxWidth: 680, margin: '0 auto' }}>
       {header('Photos & pricing')}
       <div style={{ padding: 16 }}>
         {/* Photo upload */}
@@ -135,7 +135,7 @@ export default function ListCarFlow({ onBack, onComplete }) {
 
   // Step 3: Review
   return (
-    <div style={{ minHeight: '100%', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100%', background: 'var(--bg)', maxWidth: 680, margin: '0 auto' }}>
       {header('Review listing')}
       <div style={{ padding: 16 }}>
         <div className="ios-group" style={{ marginBottom: 20 }}>

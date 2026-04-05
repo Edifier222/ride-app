@@ -6,7 +6,7 @@ export default function HostProfilePage({ host, onBack, onSelectCar, onMessage }
   const hostCars = listings.filter(l => l.host.id === host.id);
 
   return (
-    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 40 }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 40, maxWidth: 680, margin: '0 auto' }}>
       {/* Header */}
       <div style={{
         padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12,

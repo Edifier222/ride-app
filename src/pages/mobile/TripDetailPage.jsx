@@ -52,7 +52,7 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
 
   if (cancelled) {
     return (
-      <div style={{ background: 'var(--bg)', minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+      <div style={{ background: 'var(--bg)', minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 32, maxWidth: 680, margin: '0 auto' }}>
         <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'var(--error-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
           <X size={36} color="var(--error)" />
         </div>
@@ -67,7 +67,7 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
   }
 
   return (
-    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 40 }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 40, maxWidth: 680, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(22,22,22,0.85)', backdropFilter: 'blur(24px)', borderBottom: '0.5px solid var(--border)' }}>
         <button onClick={onBack} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={20} /></button>

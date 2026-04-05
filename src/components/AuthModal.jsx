@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { startGoogleLogin } from '../services/api';
+// Google OAuth requires backend redirect URI configuration — disabled for PWA
 
 export default function AuthModal() {
-  const { showAuth, authTab, setAuthTab, closeAuth, login, signup, authError, loginWithToken } = useAuth();
+  const { showAuth, authTab, setAuthTab, closeAuth, login, signup, authError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -39,19 +38,6 @@ export default function AuthModal() {
 
   const switchTab = (tab) => { setAuthTab(tab); setError(''); };
 
-  const handleGoogleLogin = async () => {
-    setError('');
-    setGoogleLoading(true);
-    try {
-      const result = await startGoogleLogin();
-      if (result?.token) {
-        loginWithToken(result.token);
-      }
-    } catch (err) {
-      setError(err.message || 'Google sign-in failed');
-    }
-    setGoogleLoading(false);
-  };
 
   return (
     <div style={{

@@ -126,22 +126,35 @@ function parseJsonApi(response) {
       extraMileRate: 0.35,
       rating: attrs.average_reviews?.score || (3.5 + (parseInt(item.id) % 15) / 10),
       trips: attrs.average_reviews?.count || (10 + parseInt(item.id) % 50),
-      host: owner ? {
-        id: ownerRef.id,
-        name: `${owner.first_name || ''} ${(owner.last_name || '').charAt(0)}.`.trim(),
-        firstName: owner.first_name || '',
-        avatar: owner.avatar || '',
-        rating: owner.average_rating || 4.8,
-        trips: owner.rentals_count || (20 + parseInt(ownerRef.id) % 100),
-        joined: owner.created ? new Date(owner.created).getFullYear().toString() : '2024',
-        responseRate: 90 + parseInt(ownerRef.id) % 10,
-        responseTime: 'within an hour',
-        bio: generateHostBio(`${owner.first_name || ''} ${ownerRef.id}`),
-      } : {
-        id: 0, name: 'Professional Host', firstName: 'Host', avatar: '', rating: 4.8, trips: 45,
-        joined: '2024', responseRate: 95, responseTime: 'within an hour',
-        bio: 'Professional fleet operator with well-maintained vehicles.',
-      },
+      host: (() => {
+        const oid = ownerRef?.id || item.id;
+        const hostNames = ['Marcus J.', 'Sarah K.', 'David R.', 'Emily T.', 'James L.', 'Lisa M.', 'Carlos P.', 'Rachel W.', 'Mike H.', 'Anna S.', 'Brian D.', 'Jessica F.'];
+        const hostAvatars = [
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
+          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
+          'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face',
+        ];
+        const idx = Math.abs(hashCode(String(oid))) % hostNames.length;
+        const avatarIdx = Math.abs(hashCode(String(oid))) % hostAvatars.length;
+        const fn = owner?.first_name;
+        const ln = owner?.last_name;
+        const displayName = fn ? `${fn} ${(ln || '').charAt(0)}.`.trim() : hostNames[idx];
+        return {
+          id: oid,
+          name: displayName,
+          firstName: fn || displayName.split(' ')[0],
+          avatar: owner?.avatar || hostAvatars[avatarIdx],
+          rating: owner?.average_rating || (4.5 + (parseInt(oid) % 5) / 10),
+          trips: owner?.rentals_count || (20 + parseInt(oid) % 100),
+          joined: owner?.created ? new Date(owner.created).getFullYear().toString() : '2024',
+          responseRate: 90 + parseInt(oid) % 10,
+          responseTime: 'within an hour',
+          bio: generateHostBio(displayName),
+        };
+      })(),
       reviews: generateReviews(item.id),
       raw: attrs, // keep raw for debugging
     };

@@ -2,7 +2,7 @@ import { useAuth } from '../../context/AuthContext';
 import { ChevronRight, CheckCircle, Car, Shield, CreditCard, Bell, CircleHelp, LogOut, Plus, Star, DollarSign, Repeat, FileText } from 'lucide-react';
 
 export default function ProfileTab({ onListCar, onVerify, onNavigate }) {
-  const { user, isLoggedIn, isHost, openLogin, openSignup, logout, toggleMode } = useAuth();
+  const { user, isLoggedIn, isHost, openLogin, openSignup, logout, toggleMode, authToken } = useAuth();
 
   if (!isLoggedIn) {
     return (
@@ -40,6 +40,11 @@ export default function ProfileTab({ onListCar, onVerify, onNavigate }) {
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 2 }}>{user.firstName} {user.lastName}</div>
             <div style={{ fontSize: 13, color: 'var(--secondary-label)', marginBottom: 4 }}>Member since {user.joined}</div>
+            {authToken ? (
+              <span className="badge badge-success" style={{ fontSize: 10 }}>API Connected</span>
+            ) : (
+              <span className="badge badge-warning" style={{ fontSize: 10 }}>Demo Mode</span>
+            )}
             {user.verified && <span className="badge badge-success"><CheckCircle size={10} /> Verified</span>}
           </div>
         </div>

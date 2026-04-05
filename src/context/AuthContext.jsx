@@ -26,10 +26,11 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     setAuthError('');
     try {
-      // Try real API first
+      // Try real API
+      console.log('[RIDE Auth] Attempting login:', email);
       const response = await apiLogin(email, password);
+      console.log('[RIDE Auth] Login success, user_id:', response.user_id, 'has token:', !!response.token);
 
-      // Outdoorsy returns: { first_name, last_name, user_id, token, ... }
       setUser({
         id: response.user_id || response.id,
         email: response.email || email,
@@ -37,7 +38,7 @@ export function AuthProvider({ children }) {
         lastName: response.last_name || '',
         avatar: response.avatar || '',
         phone: response.phone || '',
-        joined: 'April 2026',
+        joined: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
         verified: !response.show_verify_email_screen,
         mode: 'guest',
         token: response.token,
@@ -62,6 +63,7 @@ export function AuthProvider({ children }) {
     setAuthError('');
     try {
       // Try real API
+      console.log('[RIDE Auth] Attempting signup:', data.email);
       const response = await apiSignup({
         email: data.email,
         password: data.password,
@@ -69,6 +71,9 @@ export function AuthProvider({ children }) {
         lastName: data.lastName,
       });
 
+      console.log('[RIDE Auth] Signup success, user_id:', response.user_id, 'has token:', !!response.token);
+
+      const now = new Date();
       setUser({
         id: response.user_id || response.id,
         email: data.email,
@@ -76,7 +81,7 @@ export function AuthProvider({ children }) {
         lastName: response.last_name || data.lastName,
         avatar: '',
         phone: '',
-        joined: 'April 2026',
+        joined: now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
         verified: false,
         mode: 'guest',
         token: response.token,
@@ -84,7 +89,7 @@ export function AuthProvider({ children }) {
       setShowAuth(false);
       return true;
     } catch (err) {
-      console.log('API signup failed, using demo signup:', err.message);
+      console.error('[RIDE Auth] API signup failed:', err.message);
 
       // Fallback to demo
       setUser({

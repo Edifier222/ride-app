@@ -102,7 +102,13 @@ function parseJsonApi(response) {
         lat: attrs.location?.lat || 0,
         lng: attrs.location?.lng || 0,
       },
-      images: primaryImage ? [primaryImage.url, ...images.filter(u => u !== primaryImage.url)] : images,
+      images: (() => {
+        const imgs = primaryImage ? [primaryImage.url, ...images.filter(u => u !== primaryImage.url)] : images;
+        if (imgs.length > 0) return imgs;
+        // Generate placeholder for cars without images
+        const name = encodeURIComponent(attrs.name || 'Vehicle');
+        return [`https://placehold.co/800x500/1a1a1a/C9A96E?text=${name}&font=raleway`];
+      })(),
       features: Object.entries(attrs.FeaturesMap || {})
         .filter(([_, v]) => v === true || v === 'true')
         .map(([k]) => k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()))

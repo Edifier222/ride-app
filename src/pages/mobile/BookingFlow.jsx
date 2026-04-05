@@ -67,10 +67,11 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
     if (processing) return;
     setProcessing(true);
 
-    let bookingId = 'RIDE-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    let bookingId = String(Math.floor(100000 + Math.random() * 900000));
     let realBooking = false;
 
     // Try real API if we have a token and a real rental ID
+    console.log('[RIDE Booking] authToken:', !!authToken, 'car.id:', car.id);
     if (authToken && car.id) {
       try {
         // 1. Create quote

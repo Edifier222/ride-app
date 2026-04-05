@@ -995,11 +995,11 @@ export const cities = [
   { name: "Phoenix", state: "AZ", lat: 33.4484, lng: -112.074, image: "https://images.unsplash.com/photo-1558645836-e44122a743ee?w=600&h=400&fit=crop" },
   { name: "Los Angeles", state: "CA", lat: 34.0522, lng: -118.2437, image: "https://images.unsplash.com/photo-1534190760961-74e8c1c5c3da?w=600&h=400&fit=crop" },
   { name: "Miami", state: "FL", lat: 25.7617, lng: -80.1918, image: "https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?w=600&h=400&fit=crop" },
-  { name: "Austin", state: "TX", lat: 30.2672, lng: -97.7431, image: "https://images.unsplash.com/photo-1588993608655-5765a9f7c181?w=600&h=400&fit=crop" },
+  { name: "Austin", state: "TX", lat: 30.2672, lng: -97.7431, image: "https://images.unsplash.com/photo-1531218150217-54595bc2b934?w=600&h=400&fit=crop" },
   { name: "New York", state: "NY", lat: 40.7128, lng: -74.006, image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&h=400&fit=crop" },
-  { name: "Denver", state: "CO", lat: 39.7392, lng: -104.9903, image: "https://images.unsplash.com/photo-1619856699906-09e1f4ef84b0?w=600&h=400&fit=crop" },
+  { name: "Denver", state: "CO", lat: 39.7392, lng: -104.9903, image: "https://images.unsplash.com/photo-1546156929-a4c0ac411f47?w=600&h=400&fit=crop" },
   { name: "San Francisco", state: "CA", lat: 37.7749, lng: -122.4194, image: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=600&h=400&fit=crop" },
-  { name: "Seattle", state: "WA", lat: 47.6062, lng: -122.3321, image: "https://images.unsplash.com/photo-1502175353174-a7a70e73b4c3?w=600&h=400&fit=crop" },
+  { name: "Seattle", state: "WA", lat: 47.6062, lng: -122.3321, image: "https://images.unsplash.com/photo-1438401171849-74ac270044ee?w=600&h=400&fit=crop" },
   { name: "Las Vegas", state: "NV", lat: 36.1699, lng: -115.1398, image: "https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?w=600&h=400&fit=crop" },
 ];
 

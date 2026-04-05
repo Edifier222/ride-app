@@ -1,22 +1,25 @@
 import { Heart, Star, MapPin } from 'lucide-react';
 import { listings } from '../../data/listings';
+import useIsDesktop from '../../hooks/useIsDesktop';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 
 export default function FavoritesTab({ favoriteIds, onToggleFavorite, onSelectCar }) {
+  const isDesktop = useIsDesktop();
   const favorites = listings.filter(c => favoriteIds.has(c.id));
 
   return (
     <div style={{ minHeight: '100%' }}>
       <div style={{
-        padding: '16px 16px 12px',
-        background: 'rgba(22,22,22,0.85)',
-        backdropFilter: 'blur(24px)',
+        padding: isDesktop ? '0' : '16px 16px 12px',
+        background: isDesktop ? 'transparent' : 'rgba(22,22,22,0.85)',
+        backdropFilter: isDesktop ? 'none' : 'blur(24px)',
       }}>
-        <h1 className="text-large-title">Favorites</h1>
+        {!isDesktop && <h1 className="text-large-title">Favorites</h1>}
       </div>
 
-      <div style={{ padding: '8px 16px' }}>
+      <div className={isDesktop ? 'desktop-list-layout' : ''} style={isDesktop ? {} : { padding: '8px 16px' }}>
+        {isDesktop && <h1 className="text-title1" style={{ marginBottom: 20 }}>Favorites</h1>}
         {favorites.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 20px' }}>
             <Heart size={48} color="var(--text-tertiary)" style={{ marginBottom: 16 }} />

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { ChevronLeft, Star, MapPin, Zap, Shield, Clock, Fuel, Users, Gauge, Check, Share2, Heart, ChevronRight } from 'lucide-react';
 import { listings } from '../../data/listings';
+import useIsDesktop from '../../hooks/useIsDesktop';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 
 export default function CarDetailPage({ carId, carData, searchDates, onBack, onBook, onViewHost, isFavorite, onToggleFavorite }) {
+  const isDesktop = useIsDesktop();
   // Use passed car data (from API) or fall back to fake listings lookup
   const car = carData || listings.find(c => c.id === carId);
   const [imgIndex, setImgIndex] = useState(0);
@@ -55,75 +57,170 @@ export default function CarDetailPage({ carId, carData, searchDates, onBack, onB
   const today = new Date().toISOString().split('T')[0];
   const days = startDate && endDate ? Math.max(Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000), 1) : 3;
 
-  return (
-    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100 }}>
-      {/* Image carousel */}
-      <div style={{ position: 'relative', height: 300, background: '#111' }}>
-        <img src={uniqueImages[hasMultipleImages ? imgIndex % uniqueImages.length : 0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-
-        {/* Top bar — z-index above swipe areas */}
-        <div style={{
-          position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
-          padding: '12px 16px', display: 'flex', justifyContent: 'space-between',
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.4), transparent)',
-        }}>
-          <button onClick={onBack} style={{
-            width: 36, height: 36, borderRadius: '50%',
-            background: 'rgba(22,22,22,0.85)', display: 'flex',
-            alignItems: 'center', justifyContent: 'center',
-          }}><ChevronLeft size={20} /></button>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button style={{
-              width: 36, height: 36, borderRadius: '50%',
-              background: 'rgba(22,22,22,0.85)', display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-            }}><Share2 size={16} /></button>
-            <button onClick={onToggleFavorite} style={{
-              width: 36, height: 36, borderRadius: '50%',
-              background: 'rgba(22,22,22,0.85)', display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Heart size={16} fill={isFavorite ? '#ff3b30' : 'none'} stroke={isFavorite ? '#ff3b30' : '#fff'} />
-            </button>
-          </div>
-        </div>
-
-        {/* Dots — only if multiple unique images */}
-        {hasMultipleImages && (
-          <div style={{
-            position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)',
-            display: 'flex', gap: 6,
-          }}>
-            {uniqueImages.map((_, i) => (
-              <button key={i} onClick={() => setImgIndex(i)} style={{
-                width: 7, height: 7, borderRadius: '50%',
-                background: i === imgIndex % uniqueImages.length ? '#fff' : 'rgba(255,255,255,0.5)',
-              }} />
-            ))}
-          </div>
-        )}
-
-        {/* Photo counter — only if multiple */}
-        {hasMultipleImages && <div style={{
-          position: 'absolute', bottom: 12, right: 14,
-          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
-          padding: '4px 10px', borderRadius: 'var(--r-pill)',
-          fontSize: 12, fontWeight: 600, color: '#fff',
-        }}>
-          {imgIndex % uniqueImages.length + 1} of {uniqueImages.length}
-        </div>}
-
-        {/* Swipe areas — only if multiple */}
-        {hasMultipleImages && <>
-          <button onClick={() => setImgIndex(i => (i - 1 + uniqueImages.length) % uniqueImages.length)}
-            style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '30%' }} />
-          <button onClick={() => setImgIndex(i => (i + 1) % uniqueImages.length)}
-            style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '30%' }} />
-        </>}
+  // Desktop booking sidebar content
+  const BookingSidebar = () => (
+    <div className="desktop-booking-bar">
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 16 }}>
+        <span style={{ fontSize: 28, fontWeight: 700, fontFamily: 'var(--font-display)', color: 'var(--accent-text)' }}>${c.pricePerDay}</span>
+        <span style={{ fontSize: 15, color: 'var(--text-secondary)' }}>/day</span>
       </div>
 
-      {/* Content */}
-      <div style={{ padding: '16px' }}>
+      {/* Dates */}
+      <button onClick={() => setShowDates(true)} style={{
+        width: '100%', display: 'flex', background: 'var(--surface-2)', borderRadius: 'var(--r-sm)', border: '1px solid var(--border)', overflow: 'hidden', marginBottom: 12,
+      }}>
+        <div style={{ flex: 1, padding: '10px 14px', borderRight: '0.5px solid var(--border)', textAlign: 'left' }}>
+          <div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 600, marginBottom: 2 }}>PICK-UP</div>
+          <div style={{ fontSize: 14, fontWeight: startDate ? 600 : 400, color: startDate ? 'var(--text)' : 'var(--text-tertiary)' }}>
+            {startDate ? new Date(startDate + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Add date'}
+          </div>
+        </div>
+        <div style={{ flex: 1, padding: '10px 14px', textAlign: 'left' }}>
+          <div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 600, marginBottom: 2 }}>RETURN</div>
+          <div style={{ fontSize: 14, fontWeight: endDate ? 600 : 400, color: endDate ? 'var(--text)' : 'var(--text-tertiary)' }}>
+            {endDate ? new Date(endDate + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Add date'}
+          </div>
+        </div>
+      </button>
+
+      {/* Price summary */}
+      {startDate && endDate && (
+        <div style={{ background: 'var(--surface-2)', borderRadius: 'var(--r-sm)', padding: 12, marginBottom: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)', marginBottom: 6 }}>
+            <span>${c.pricePerDay}/day × {days} days</span>
+            <span>${c.pricePerDay * days}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16, fontWeight: 700, paddingTop: 8, borderTop: '0.5px solid var(--border)' }}>
+            <span>Total</span>
+            <span style={{ color: 'var(--accent-text)' }}>${c.pricePerDay * days}</span>
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>before taxes and fees</div>
+        </div>
+      )}
+
+      <button
+        className="btn-primary"
+        style={{ maxWidth: 'none' }}
+        onClick={() => {
+          if (!startDate || !endDate) setShowDates(true);
+          else onBook(c, { startDate, endDate });
+        }}
+      >
+        {startDate && endDate ? 'Continue to booking' : 'Select dates'}
+      </button>
+
+      {/* Quick info */}
+      <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {c.instantBook && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--success)' }}>
+            <Zap size={14} /> Instant booking available
+          </div>
+        )}
+        {c.delivery && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
+            <MapPin size={14} /> Delivery available · ${c.deliveryFee}
+          </div>
+        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--text-secondary)' }}>
+          <Shield size={14} /> Protection plans from $25/day
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: isDesktop ? 40 : 100 }}>
+      {/* Desktop: back bar */}
+      {isDesktop && (
+        <div style={{ padding: '16px 32px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={onBack} style={{
+            width: 36, height: 36, borderRadius: '50%',
+            background: 'var(--surface-2)', border: '1px solid var(--border)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}><ChevronLeft size={20} /></button>
+          <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Back to results</span>
+          <div style={{ flex: 1 }} />
+          <button onClick={onToggleFavorite} style={{
+            width: 36, height: 36, borderRadius: '50%',
+            background: 'var(--surface-2)', border: '1px solid var(--border)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Heart size={16} fill={isFavorite ? '#ff3b30' : 'none'} stroke={isFavorite ? '#ff3b30' : '#fff'} />
+          </button>
+          <button style={{
+            width: 36, height: 36, borderRadius: '50%',
+            background: 'var(--surface-2)', border: '1px solid var(--border)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}><Share2 size={16} /></button>
+        </div>
+      )}
+
+      {/* Desktop: image gallery grid */}
+      {isDesktop ? (
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 32px 24px' }}>
+          <div className="desktop-detail-gallery" style={{ borderRadius: 'var(--r-lg)', overflow: 'hidden', maxHeight: 480 }}>
+            {uniqueImages.slice(0, 5).map((img, i) => (
+              <img key={i} src={img} alt="" style={{
+                width: '100%', height: i === 0 ? '100%' : '100%',
+                objectFit: 'cover', cursor: 'pointer',
+                ...(i === 0 ? { gridRow: '1 / 3', minHeight: 480 } : { minHeight: 236 }),
+              }} onClick={() => setImgIndex(i)} />
+            ))}
+            {uniqueImages.length <= 1 && (
+              <img src={uniqueImages[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'brightness(0.6)', gridRow: '1 / 3' }} />
+            )}
+          </div>
+        </div>
+      ) : (
+        /* Mobile: Image carousel */
+        <div style={{ position: 'relative', height: 300, background: '#111' }}>
+          <img src={uniqueImages[hasMultipleImages ? imgIndex % uniqueImages.length : 0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10,
+            padding: '12px 16px', display: 'flex', justifyContent: 'space-between',
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.4), transparent)',
+          }}>
+            <button onClick={onBack} style={{
+              width: 36, height: 36, borderRadius: '50%',
+              background: 'rgba(22,22,22,0.85)', display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+            }}><ChevronLeft size={20} /></button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button style={{
+                width: 36, height: 36, borderRadius: '50%',
+                background: 'rgba(22,22,22,0.85)', display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+              }}><Share2 size={16} /></button>
+              <button onClick={onToggleFavorite} style={{
+                width: 36, height: 36, borderRadius: '50%',
+                background: 'rgba(22,22,22,0.85)', display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Heart size={16} fill={isFavorite ? '#ff3b30' : 'none'} stroke={isFavorite ? '#ff3b30' : '#fff'} />
+              </button>
+            </div>
+          </div>
+          {hasMultipleImages && (
+            <div style={{ position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6 }}>
+              {uniqueImages.map((_, i) => (
+                <button key={i} onClick={() => setImgIndex(i)} style={{ width: 7, height: 7, borderRadius: '50%', background: i === imgIndex % uniqueImages.length ? '#fff' : 'rgba(255,255,255,0.5)' }} />
+              ))}
+            </div>
+          )}
+          {hasMultipleImages && <div style={{ position: 'absolute', bottom: 12, right: 14, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', padding: '4px 10px', borderRadius: 'var(--r-pill)', fontSize: 12, fontWeight: 600, color: '#fff' }}>
+            {imgIndex % uniqueImages.length + 1} of {uniqueImages.length}
+          </div>}
+          {hasMultipleImages && <>
+            <button onClick={() => setImgIndex(i => (i - 1 + uniqueImages.length) % uniqueImages.length)} style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '30%' }} />
+            <button onClick={() => setImgIndex(i => (i + 1) % uniqueImages.length)} style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '30%' }} />
+          </>}
+        </div>
+      )}
+
+      {/* Desktop: two-column layout / Mobile: single column */}
+      <div style={isDesktop ? { maxWidth: 1200, margin: '0 auto', padding: '0 32px', display: 'flex', gap: 40 } : { padding: '16px' }}>
+        {/* Main detail column */}
+        <div style={isDesktop ? { flex: 1, minWidth: 0 } : {}}>
         {/* Title */}
         <h1 style={{ fontSize: 24, fontWeight: 700, fontFamily: 'var(--font-display)', marginBottom: 10, textAlign: 'center' }}>
           {c.year} {c.make} {c.model}
@@ -357,9 +454,18 @@ export default function CarDetailPage({ carId, carData, searchDates, onBack, onB
             </div>
           </div>
         </div>
-      </div>
+      </div>{/* end main detail column */}
 
-      {/* Sticky bottom booking bar */}
+      {/* Desktop: booking sidebar */}
+      {isDesktop && (
+        <div style={{ width: 380, flexShrink: 0 }}>
+          <BookingSidebar />
+        </div>
+      )}
+      </div>{/* end two-column / single-column wrapper */}
+
+      {/* Sticky bottom booking bar — mobile only */}
+      {!isDesktop && (
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,
         background: 'rgba(22,22,22,0.92)',
@@ -407,6 +513,7 @@ export default function CarDetailPage({ carId, carData, searchDates, onBack, onB
           {startDate && endDate ? 'Continue' : 'Select dates'}
         </button>
       </div>
+      )}
 
       {/* Date picker sheet — visual calendar */}
       {showDates && (() => {

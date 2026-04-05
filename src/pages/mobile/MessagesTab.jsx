@@ -1,17 +1,20 @@
 import { MessageSquare } from 'lucide-react';
+import useIsDesktop from '../../hooks/useIsDesktop';
 
 export default function MessagesTab({ conversations, onOpenChat }) {
+  const isDesktop = useIsDesktop();
   return (
     <div style={{ minHeight: '100%' }}>
       <div style={{
-        padding: '16px 16px 12px',
-        background: 'rgba(22,22,22,0.85)',
-        backdropFilter: 'blur(24px)',
+        padding: isDesktop ? '0' : '16px 16px 12px',
+        background: isDesktop ? 'transparent' : 'rgba(22,22,22,0.85)',
+        backdropFilter: isDesktop ? 'none' : 'blur(24px)',
       }}>
-        <h1 className="text-large-title">Messages</h1>
+        {!isDesktop && <h1 className="text-large-title">Messages</h1>}
       </div>
 
-      <div style={{ padding: '0 16px' }}>
+      <div className={isDesktop ? 'desktop-list-layout' : ''} style={isDesktop ? {} : { padding: '0 16px' }}>
+        {isDesktop && <h1 className="text-title1" style={{ marginBottom: 20 }}>Messages</h1>}
         {conversations.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 20px' }}>
             <MessageSquare size={48} color="var(--text-tertiary)" style={{ marginBottom: 16 }} />

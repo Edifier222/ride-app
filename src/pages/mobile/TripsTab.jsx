@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Calendar, Star, ChevronRight, Clock, CheckCircle, X } from 'lucide-react';
 import { guestTrips } from '../../data/mockBookings';
+import useIsDesktop from '../../hooks/useIsDesktop';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 
 export default function TripsTab({ lastBooking, onVerify, onSelectTrip }) {
+  const isDesktop = useIsDesktop();
   const [priceBreakdown, setPriceBreakdown] = useState(null);
   const trips = [];
   if (lastBooking && lastBooking.vehicle) trips.push(lastBooking);
@@ -98,14 +100,15 @@ export default function TripsTab({ lastBooking, onVerify, onSelectTrip }) {
     <div style={{ minHeight: '100%', background: 'var(--bg)' }}>
       {/* Header */}
       <div style={{
-        padding: '16px 20px',
-        background: 'rgba(22,22,22,0.85)',
-        backdropFilter: 'blur(24px)',
+        padding: isDesktop ? '0' : '16px 20px',
+        background: isDesktop ? 'transparent' : 'rgba(22,22,22,0.85)',
+        backdropFilter: isDesktop ? 'none' : 'blur(24px)',
       }}>
-        <h1 className="text-large-title">Trips</h1>
+        {!isDesktop && <h1 className="text-large-title">Trips</h1>}
       </div>
 
-      <div style={{ padding: '0 16px 20px' }}>
+      <div className={isDesktop ? 'desktop-list-layout' : ''} style={isDesktop ? {} : { padding: '0 16px 20px' }}>
+        {isDesktop && <h1 className="text-title1" style={{ marginBottom: 20 }}>Trips</h1>}
 
         {/* PENDING */}
         {pending.length > 0 && (

@@ -1,8 +1,10 @@
 import { useAuth } from '../../context/AuthContext';
 import { ChevronRight, CheckCircle, Car, Shield, CreditCard, Bell, CircleHelp, LogOut, Plus, Star, DollarSign, Repeat, FileText } from 'lucide-react';
+import useIsDesktop from '../../hooks/useIsDesktop';
 
 export default function ProfileTab({ onListCar, onVerify, onNavigate }) {
   const { user, isLoggedIn, isHost, openLogin, openSignup, logout, toggleMode, authToken } = useAuth();
+  const isDesktop = useIsDesktop();
 
   if (!isLoggedIn) {
     return (
@@ -23,14 +25,14 @@ export default function ProfileTab({ onListCar, onVerify, onNavigate }) {
   return (
     <div style={{ minHeight: '100%' }}>
       <div style={{
-        padding: '16px 16px 12px',
-        background: 'rgba(22,22,22,0.85)',
-        backdropFilter: 'blur(24px)',
+        padding: isDesktop ? '0' : '16px 16px 12px',
+        background: isDesktop ? 'transparent' : 'rgba(22,22,22,0.85)',
+        backdropFilter: isDesktop ? 'none' : 'blur(24px)',
       }}>
-        <h1 className="text-large-title">Profile</h1>
+        {!isDesktop && <h1 className="text-large-title">Profile</h1>}
       </div>
 
-      <div style={{ padding: '8px 16px' }}>
+      <div className={isDesktop ? 'desktop-profile-layout' : ''} style={isDesktop ? {} : { padding: '8px 16px' }}>
         {/* User card */}
         <div style={{
           background: 'var(--card-bg)', borderRadius: 'var(--r-md)',

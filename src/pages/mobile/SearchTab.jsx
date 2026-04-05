@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, X, MapPin, Zap, Star, ChevronRight, SlidersHorizontal, Navigation, Map, List } from 'lucide-react';
 import { listings as fakeListings, cities } from '../../data/listings';
 import { useSearch } from '../../hooks/useSearch';
+import useIsDesktop from '../../hooks/useIsDesktop';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 // leaflet CSS imported in global.css
@@ -82,6 +83,7 @@ function CarCard({ car, onTap, tripDays }) {
 }
 
 export default function SearchTab({ onSelectCar }) {
+  const isDesktop = useIsDesktop();
   const [searchOpen, setSearchOpen] = useState(false);
   const [city, setCity] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -330,133 +332,376 @@ export default function SearchTab({ onSelectCar }) {
 
   const today = new Date().toISOString().split('T')[0];
 
-  return (
-    <div style={{ minHeight: '100%', background: 'var(--bg)' }}>
-      {/* Header */}
-      <div style={{
-        background: 'var(--surface)',
-        borderBottom: '1px solid var(--border)',
-        padding: '20px 20px 24px',
-      }}>
-        {/* Logo */}
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 32, letterSpacing: '0.08em', lineHeight: 1 }}>
-            <span className="text-gold">RIDE</span>
-          </div>
-          <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 3, letterSpacing: '0.06em' }}>
-            powered by <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Outdoorsy</span>
-          </div>
-          <div style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 12 }}>
-            Professionally managed cars, <span style={{ color: 'var(--accent-text)', fontWeight: 500 }}>ready when you are.</span>
+  // Shared filter panel content — used in both mobile sheet and desktop sidebar
+  const FilterPanelContent = () => {
+    const Toggle = ({ on, onToggle, label }) => (
+      <button onClick={onToggle} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 0', width: '100%' }}>
+        <span style={{ fontSize: 16 }}>{label}</span>
+        <div style={{ width: 50, height: 30, borderRadius: 15, background: on ? 'var(--success)' : 'var(--surface-3)', padding: 2, transition: 'background 0.2s' }}>
+          <div style={{ width: 26, height: 26, borderRadius: 13, background: '#fff', transform: on ? 'translateX(20px)' : 'translateX(0)', transition: 'transform 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
+        </div>
+      </button>
+    );
+
+    const filteredBrands = filterSearch
+      ? allMakes.filter(m => m.toLowerCase().includes(filterSearch.toLowerCase()))
+      : allMakes;
+
+    return (
+      <div>
+        {/* Vehicle type */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>VEHICLE TYPE</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {['All', 'Car', 'SUV', 'Truck'].map(t => (
+              <button key={t} className={`chip ${typeFilter === t ? 'active' : ''}`} onClick={() => setTypeFilter(t)} style={{ fontSize: 13, flex: 1, justifyContent: 'center' }}>{t}</button>
+            ))}
           </div>
         </div>
 
-        {/* Search bar */}
-        <button onClick={openSearch} style={{
-          width: '100%', display: 'flex', alignItems: 'center', gap: 12,
-          padding: '16px 18px', background: 'var(--surface-2)',
-          borderRadius: 'var(--r-lg)', border: '1px solid var(--border)',
-        }}>
-          <Search size={20} color="var(--accent)" />
-          <div style={{ flex: 1, textAlign: 'left' }}>
-            <div style={{
-              fontSize: 16, fontWeight: city ? 500 : 400,
-              color: city ? 'var(--text)' : 'var(--text-tertiary)',
-            }}>
-              {searchSummary()}
-            </div>
-          </div>
-          {city && (
-            <button onClick={(e) => { e.stopPropagation(); setCity(''); setStartDate(''); setEndDate(''); setShowMap(false); }} style={{ padding: 4 }}>
-              <X size={16} color="var(--text-tertiary)" />
+        {/* Brand */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>BRAND</div>
+          <div className="ios-group">
+            <button className="ios-group-item" onClick={() => { setBrandExpanded(!brandExpanded); setFilterSearch(''); }} style={{ padding: '12px 16px' }}>
+              <span style={{ flex: 1, fontSize: 15 }}>Brand</span>
+              <span style={{ fontSize: 14, color: makeFilter !== 'All' ? 'var(--accent-text)' : 'var(--text-tertiary)', marginRight: 4 }}>
+                {makeFilter !== 'All' ? makeFilter : 'All'}
+              </span>
+              <ChevronRight size={14} color="var(--text-tertiary)" style={{ transform: brandExpanded ? 'rotate(90deg)' : 'none', transition: '0.2s' }} />
             </button>
-          )}
-        </button>
-      </div>
-
-      {/* Filter + map toggle */}
-      <div style={{ padding: '12px 16px 0', display: 'flex', justifyContent: city ? 'space-between' : 'flex-end', alignItems: 'center' }}>
-        {/* Map/List toggle — only when city is selected */}
-        {city && (
-          <div style={{ display: 'flex', background: 'var(--surface-2)', borderRadius: 'var(--r-pill)', padding: 2, border: '1px solid var(--border)' }}>
-            <button onClick={() => setShowMap(false)} style={{
-              padding: '6px 14px', borderRadius: 'var(--r-pill)', fontSize: 12, fontWeight: 600,
-              background: !showMap ? 'var(--accent)' : 'transparent',
-              color: !showMap ? 'var(--bg)' : 'var(--text-tertiary)',
-              display: 'flex', alignItems: 'center', gap: 4,
-            }}><List size={13} /> List</button>
-            <button onClick={() => setShowMap(true)} style={{
-              padding: '6px 14px', borderRadius: 'var(--r-pill)', fontSize: 12, fontWeight: 600,
-              background: showMap ? 'var(--accent)' : 'transparent',
-              color: showMap ? 'var(--bg)' : 'var(--text-tertiary)',
-              display: 'flex', alignItems: 'center', gap: 4,
-            }}><Map size={13} /> Map</button>
-          </div>
-        )}
-        <button className="chip" onClick={() => setShowFilters(true)} style={{ padding: '6px 12px', fontSize: 13 }}>
-          <SlidersHorizontal size={13} /> Filters
-          {hasFilters && <span style={{ background: 'var(--accent)', color: 'var(--bg)', borderRadius: '50%', width: 16, height: 16, fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{activeFilterCount}</span>}
-        </button>
-      </div>
-
-      {/* Map view */}
-      {showMap && (
-        <div style={{ position: 'relative', touchAction: 'none' }} onTouchMove={e => e.stopPropagation()}>
-          <div ref={mapRef} style={{ width: '100%', height: 'calc(100vh - 260px)', minHeight: 350, touchAction: 'none' }} />
-
-          {/* Selected car preview card */}
-          {selectedMapCar && (
-            <div style={{ position: 'absolute', bottom: 16, left: 16, right: 16, zIndex: 1000 }}>
-              <button className="card" onClick={() => onSelectCar(selectedMapCar.id, { startDate, endDate, car: selectedMapCar })} style={{ width: '100%', textAlign: 'left', display: 'flex', overflow: 'hidden', background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                <img src={selectedMapCar.images[0]} alt="" style={{ width: 110, height: 80, objectFit: 'cover' }} />
-                <div style={{ flex: 1, padding: '10px 14px' }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 3 }}>
-                    {selectedMapCar.year} {selectedMapCar.make} {selectedMapCar.model}
-                  </div>
-                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 4 }}>
-                    <Star size={11} fill="currentColor" color="var(--accent)" /> {selectedMapCar.rating} · {selectedMapCar.trips} trips
-                  </div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent-text)' }}>
-                    {startDate && endDate
-                      ? `${fmt(selectedMapCar.pricePerDay * Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000))} total`
-                      : `${fmt(selectedMapCar.pricePerDay)}/day`}
-                  </div>
+            {brandExpanded && (
+              <div style={{ borderTop: '0.5px solid var(--border)' }}>
+                <div style={{ padding: '8px 12px' }}>
+                  <input className="ios-input" placeholder="Search brands..." value={filterSearch} onChange={e => setFilterSearch(e.target.value)} style={{ padding: '8px 12px', fontSize: 14 }} />
                 </div>
-              </button>
-              <button onClick={() => setSelectedMapCar(null)} style={{
-                position: 'absolute', top: -8, right: -4, width: 28, height: 28,
-                borderRadius: '50%', background: 'var(--surface)', border: '1px solid var(--border)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}><X size={14} /></button>
+                <button onClick={() => { setMakeFilter('All'); setModelFilter('All'); setBrandExpanded(false); setFilterSearch(''); }} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderBottom: '0.5px solid var(--border)' }}>
+                  <span style={{ fontSize: 14 }}>All brands</span>
+                  {makeFilter === 'All' && <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)' }} />}
+                </button>
+                {filteredBrands.map(brand => (
+                  <button key={brand} onClick={() => { setMakeFilter(brand); setModelFilter('All'); setBrandExpanded(false); setFilterSearch(''); }} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderBottom: '0.5px solid var(--border)' }}>
+                    <span style={{ fontSize: 14 }}>{brand}</span>
+                    {makeFilter === brand && <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)' }} />}
+                  </button>
+                ))}
+              </div>
+            )}
+            {makeFilter !== 'All' && (
+              <div style={{ borderTop: '0.5px solid var(--border)', padding: '8px 12px' }}>
+                <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 6 }}>Model</div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <button className={`chip ${modelFilter === 'All' ? 'active' : ''}`} onClick={() => setModelFilter('All')} style={{ fontSize: 12 }}>All</button>
+                  {(brandModels[makeFilter] || []).map(m => (
+                    <button key={m} className={`chip ${modelFilter === m ? 'active' : ''}`} onClick={() => setModelFilter(m)} style={{ fontSize: 12 }}>{m}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Fuel */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>FUEL TYPE</div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {['All', 'Gas', 'Electric', 'Hybrid'].map(f => (
+              <button key={f} className={`chip ${fuelFilter === f ? 'active' : ''}`} onClick={() => setFuelFilter(f)} style={{ fontSize: 13, flex: 1, justifyContent: 'center' }}>{f}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Transmission */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>TRANSMISSION</div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {['All', 'Automatic', 'Manual'].map(t => (
+              <button key={t} className={`chip ${transFilter === t ? 'active' : ''}`} onClick={() => setTransFilter(t)} style={{ fontSize: 13, flex: 1, justifyContent: 'center' }}>{t}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Seats */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>SEATS</div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {['All', '2', '4', '5', '7'].map(s => (
+              <button key={s} className={`chip ${seatsFilter === s ? 'active' : ''}`} onClick={() => setSeatsFilter(s)} style={{ fontSize: 13, flex: 1, justifyContent: 'center' }}>{s === 'All' ? 'Any' : s + '+'}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Price */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>PRICE</div>
+          <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: 14 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Max per day</span>
+              <span style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--font-display)', color: 'var(--accent-text)' }}>${maxPrice}</span>
+            </div>
+            <input type="range" min={30} max={200} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>
+              <span>$30</span><span>$200</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Booking toggles */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-tertiary)', letterSpacing: '0.08em', padding: '8px 0' }}>BOOKING</div>
+          <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: '0 14px' }}>
+            <Toggle on={instantFilter} onToggle={() => setInstantFilter(!instantFilter)} label="Instant book" />
+            <div style={{ borderTop: '0.5px solid var(--border)' }} />
+            <Toggle on={deliveryFilter} onToggle={() => setDeliveryFilter(!deliveryFilter)} label="Delivery" />
+          </div>
+        </div>
+
+        {/* Reset */}
+        {activeFilterCount > 0 && (
+          <button onClick={resetFilters} style={{ width: '100%', textAlign: 'center', fontSize: 13, color: 'var(--accent)', padding: '8px 0' }}>
+            Reset all filters
+          </button>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ minHeight: '100%', background: 'var(--bg)' }}>
+      {/* Header — different for mobile vs desktop */}
+      <div style={{
+        background: isDesktop ? 'var(--bg)' : 'var(--surface)',
+        borderBottom: isDesktop ? 'none' : '1px solid var(--border)',
+        padding: isDesktop ? '32px 0 0' : '20px 20px 24px',
+      }}>
+        <div className={isDesktop ? 'desktop-content' : ''}>
+          {/* Logo — mobile only */}
+          {!isDesktop && (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 32, letterSpacing: '0.08em', lineHeight: 1 }}>
+                <span className="text-gold">RIDE</span>
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 3, letterSpacing: '0.06em' }}>
+                powered by <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Outdoorsy</span>
+              </div>
+              <div style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 12 }}>
+                Professionally managed cars, <span style={{ color: 'var(--accent-text)', fontWeight: 500 }}>ready when you are.</span>
+              </div>
             </div>
           )}
+
+          {/* Desktop hero text */}
+          {isDesktop && (
+            <div style={{ marginBottom: 24 }}>
+              <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 42, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.15, marginBottom: 8 }}>
+                Find your perfect <span className="text-gold">ride</span>
+              </h1>
+              <p style={{ fontSize: 17, color: 'var(--text-secondary)', maxWidth: 500 }}>
+                Professionally managed cars, ready when you are.
+              </p>
+            </div>
+          )}
+
+          {/* Search bar */}
+          <button onClick={openSearch} style={{
+            width: '100%', maxWidth: isDesktop ? 640 : 'none',
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: isDesktop ? '14px 20px' : '16px 18px',
+            background: 'var(--surface-2)',
+            borderRadius: 'var(--r-lg)', border: '1px solid var(--border)',
+          }}>
+            <Search size={20} color="var(--accent)" />
+            <div style={{ flex: 1, textAlign: 'left' }}>
+              <div style={{
+                fontSize: 16, fontWeight: city ? 500 : 400,
+                color: city ? 'var(--text)' : 'var(--text-tertiary)',
+              }}>
+                {searchSummary()}
+              </div>
+            </div>
+            {city && (
+              <button onClick={(e) => { e.stopPropagation(); setCity(''); setStartDate(''); setEndDate(''); setShowMap(false); }} style={{ padding: 4 }}>
+                <X size={16} color="var(--text-tertiary)" />
+              </button>
+            )}
+          </button>
+
+          {/* Desktop: result count + map toggle inline */}
+          {isDesktop && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, paddingBottom: 8, borderBottom: '0.5px solid var(--border)' }}>
+              <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
+                {isLive && <span style={{ color: 'var(--success)', marginRight: 8 }}>Live data</span>}
+                <span style={{ fontWeight: 600, color: 'var(--text)' }}>{filtered.length}</span> car{filtered.length !== 1 ? 's' : ''} available
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {city && (
+                  <div style={{ display: 'flex', background: 'var(--surface-2)', borderRadius: 'var(--r-pill)', padding: 2, border: '1px solid var(--border)' }}>
+                    <button onClick={() => setShowMap(false)} style={{
+                      padding: '6px 14px', borderRadius: 'var(--r-pill)', fontSize: 12, fontWeight: 600,
+                      background: !showMap ? 'var(--accent)' : 'transparent',
+                      color: !showMap ? 'var(--bg)' : 'var(--text-tertiary)',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                    }}><List size={13} /> List</button>
+                    <button onClick={() => setShowMap(true)} style={{
+                      padding: '6px 14px', borderRadius: 'var(--r-pill)', fontSize: 12, fontWeight: 600,
+                      background: showMap ? 'var(--accent)' : 'transparent',
+                      color: showMap ? 'var(--bg)' : 'var(--text-tertiary)',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                    }}><Map size={13} /> Map</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile-only: filter + map toggle */}
+      {!isDesktop && (
+        <div style={{ padding: '12px 16px 0', display: 'flex', justifyContent: city ? 'space-between' : 'flex-end', alignItems: 'center' }}>
+          {city && (
+            <div style={{ display: 'flex', background: 'var(--surface-2)', borderRadius: 'var(--r-pill)', padding: 2, border: '1px solid var(--border)' }}>
+              <button onClick={() => setShowMap(false)} style={{
+                padding: '6px 14px', borderRadius: 'var(--r-pill)', fontSize: 12, fontWeight: 600,
+                background: !showMap ? 'var(--accent)' : 'transparent',
+                color: !showMap ? 'var(--bg)' : 'var(--text-tertiary)',
+                display: 'flex', alignItems: 'center', gap: 4,
+              }}><List size={13} /> List</button>
+              <button onClick={() => setShowMap(true)} style={{
+                padding: '6px 14px', borderRadius: 'var(--r-pill)', fontSize: 12, fontWeight: 600,
+                background: showMap ? 'var(--accent)' : 'transparent',
+                color: showMap ? 'var(--bg)' : 'var(--text-tertiary)',
+                display: 'flex', alignItems: 'center', gap: 4,
+              }}><Map size={13} /> Map</button>
+            </div>
+          )}
+          <button className="chip" onClick={() => setShowFilters(true)} style={{ padding: '6px 12px', fontSize: 13 }}>
+            <SlidersHorizontal size={13} /> Filters
+            {hasFilters && <span style={{ background: 'var(--accent)', color: 'var(--bg)', borderRadius: '50%', width: 16, height: 16, fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{activeFilterCount}</span>}
+          </button>
         </div>
       )}
 
-      {/* Car list */}
-      {!showMap && <div style={{ padding: '8px 16px' }}>
-        {/* Live data badge */}
-        {isLive && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, fontSize: 12, color: 'var(--success)' }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)' }} /> Live data · {filtered.length} cars
-        </div>}
-        {/* Loading */}
-        {searchLoading && <div style={{ textAlign: 'center', padding: '40px 0' }}>
-          <div style={{ width: 24, height: 24, border: '2px solid var(--surface-3)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-          <div style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>Searching...</div>
-        </div>}
-        {!searchLoading && filtered.length > 0 ? (
-          filtered.map(car => <CarCard key={car.id} car={car} tripDays={startDate && endDate ? Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000) : 0} onTap={(id) => onSelectCar(id, { startDate, endDate, car })} />)
-        ) : !searchLoading ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <Search size={28} color="var(--text-tertiary)" />
+      {/* Desktop layout: sidebar filters + grid results */}
+      {isDesktop ? (
+        <div className="desktop-content">
+          <div className="desktop-search-layout">
+            {/* Sidebar filters */}
+            <div className="desktop-search-sidebar">
+              <div style={{ fontSize: 16, fontWeight: 700, fontFamily: 'var(--font-display)', marginBottom: 16 }}>Filters</div>
+              <FilterPanelContent />
             </div>
-            <div style={{ fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 6 }}>No cars found</div>
-            <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 24 }}>Try a different location or adjust your filters</div>
-            <button className="btn-secondary btn-sm" onClick={() => { setCity(''); setMaxPrice(600); setFuelFilter('All'); }}>Clear all filters</button>
+
+            {/* Main content */}
+            <div className="desktop-search-main">
+              {/* Map view */}
+              {showMap && (
+                <div style={{ position: 'relative' }}>
+                  <div ref={mapRef} style={{ width: '100%', height: 'calc(100vh - 260px)', minHeight: 400, borderRadius: 'var(--r-lg)', overflow: 'hidden' }} />
+                  {selectedMapCar && (
+                    <div style={{ position: 'absolute', bottom: 16, left: 16, right: 16, maxWidth: 400, zIndex: 1000 }}>
+                      <button className="card" onClick={() => onSelectCar(selectedMapCar.id, { startDate, endDate, car: selectedMapCar })} style={{ width: '100%', textAlign: 'left', display: 'flex', overflow: 'hidden', background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                        <img src={selectedMapCar.images[0]} alt="" style={{ width: 110, height: 80, objectFit: 'cover' }} />
+                        <div style={{ flex: 1, padding: '10px 14px' }}>
+                          <div style={{ fontSize: 15, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 3 }}>
+                            {selectedMapCar.year} {selectedMapCar.make} {selectedMapCar.model}
+                          </div>
+                          <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 4 }}>
+                            <Star size={11} fill="currentColor" color="var(--accent)" /> {selectedMapCar.rating} · {selectedMapCar.trips} trips
+                          </div>
+                          <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent-text)' }}>
+                            {startDate && endDate
+                              ? `${fmt(selectedMapCar.pricePerDay * Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000))} total`
+                              : `${fmt(selectedMapCar.pricePerDay)}/day`}
+                          </div>
+                        </div>
+                      </button>
+                      <button onClick={() => setSelectedMapCar(null)} style={{ position: 'absolute', top: -8, right: -4, width: 28, height: 28, borderRadius: '50%', background: 'var(--surface)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={14} /></button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Grid results */}
+              {!showMap && (
+                <>
+                  {searchLoading && <div style={{ textAlign: 'center', padding: '60px 0' }}>
+                    <div style={{ width: 24, height: 24, border: '2px solid var(--surface-3)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+                    <div style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>Searching...</div>
+                  </div>}
+                  {!searchLoading && filtered.length > 0 ? (
+                    <div className="desktop-car-grid">
+                      {filtered.map(car => <CarCard key={car.id} car={car} tripDays={startDate && endDate ? Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000) : 0} onTap={(id) => onSelectCar(id, { startDate, endDate, car })} />)}
+                    </div>
+                  ) : !searchLoading ? (
+                    <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+                      <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                        <Search size={28} color="var(--text-tertiary)" />
+                      </div>
+                      <div style={{ fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 6 }}>No cars found</div>
+                      <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 24 }}>Try a different location or adjust your filters</div>
+                      <button className="btn-secondary btn-sm" onClick={() => { setCity(''); setMaxPrice(600); setFuelFilter('All'); }}>Clear all filters</button>
+                    </div>
+                  ) : null}
+                </>
+              )}
+            </div>
           </div>
-        ) : null}
-      </div>}
+        </div>
+      ) : (
+        <>
+          {/* Mobile: Map view */}
+          {showMap && (
+            <div style={{ position: 'relative', touchAction: 'none' }} onTouchMove={e => e.stopPropagation()}>
+              <div ref={mapRef} style={{ width: '100%', height: 'calc(100vh - 260px)', minHeight: 350, touchAction: 'none' }} />
+              {selectedMapCar && (
+                <div style={{ position: 'absolute', bottom: 16, left: 16, right: 16, zIndex: 1000 }}>
+                  <button className="card" onClick={() => onSelectCar(selectedMapCar.id, { startDate, endDate, car: selectedMapCar })} style={{ width: '100%', textAlign: 'left', display: 'flex', overflow: 'hidden', background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                    <img src={selectedMapCar.images[0]} alt="" style={{ width: 110, height: 80, objectFit: 'cover' }} />
+                    <div style={{ flex: 1, padding: '10px 14px' }}>
+                      <div style={{ fontSize: 15, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 3 }}>
+                        {selectedMapCar.year} {selectedMapCar.make} {selectedMapCar.model}
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 4 }}>
+                        <Star size={11} fill="currentColor" color="var(--accent)" /> {selectedMapCar.rating} · {selectedMapCar.trips} trips
+                      </div>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent-text)' }}>
+                        {startDate && endDate
+                          ? `${fmt(selectedMapCar.pricePerDay * Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000))} total`
+                          : `${fmt(selectedMapCar.pricePerDay)}/day`}
+                      </div>
+                    </div>
+                  </button>
+                  <button onClick={() => setSelectedMapCar(null)} style={{ position: 'absolute', top: -8, right: -4, width: 28, height: 28, borderRadius: '50%', background: 'var(--surface)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={14} /></button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Mobile: Car list */}
+          {!showMap && <div style={{ padding: '8px 16px' }}>
+            {isLive && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, fontSize: 12, color: 'var(--success)' }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--success)' }} /> Live data · {filtered.length} cars
+            </div>}
+            {searchLoading && <div style={{ textAlign: 'center', padding: '40px 0' }}>
+              <div style={{ width: 24, height: 24, border: '2px solid var(--surface-3)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
+              <div style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>Searching...</div>
+            </div>}
+            {!searchLoading && filtered.length > 0 ? (
+              filtered.map(car => <CarCard key={car.id} car={car} tripDays={startDate && endDate ? Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000) : 0} onTap={(id) => onSelectCar(id, { startDate, endDate, car })} />)
+            ) : !searchLoading ? (
+              <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <Search size={28} color="var(--text-tertiary)" />
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 6 }}>No cars found</div>
+                <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 24 }}>Try a different location or adjust your filters</div>
+                <button className="btn-secondary btn-sm" onClick={() => { setCity(''); setMaxPrice(600); setFuelFilter('All'); }}>Clear all filters</button>
+              </div>
+            ) : null}
+          </div>}
+        </>
+      )}
 
       {/* ========== SEARCH MODAL ========== */}
       {searchOpen && (

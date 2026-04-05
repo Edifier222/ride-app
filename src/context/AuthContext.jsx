@@ -18,7 +18,7 @@ const DEMO_USER = {
 };
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(DEMO_USER);
+  const [user, setUser] = useState(null); // Start logged out — must sign up or log in
   const [showAuth, setShowAuth] = useState(false);
   const [authTab, setAuthTab] = useState('login');
   const [authError, setAuthError] = useState('');
@@ -46,16 +46,9 @@ export function AuthProvider({ children }) {
       setShowAuth(false);
       return true;
     } catch (err) {
-      console.log('API login failed, using demo login:', err.message);
-
-      // Fallback to demo login for the PoC
-      setUser({
-        ...DEMO_USER,
-        email,
-        firstName: email.split('@')[0],
-      });
-      setShowAuth(false);
-      return true;
+      console.error('[RIDE Auth] Login failed:', err.message);
+      setAuthError(err.message || 'Login failed. Please check your credentials.');
+      return false;
     }
   };
 
@@ -90,17 +83,8 @@ export function AuthProvider({ children }) {
       return true;
     } catch (err) {
       console.error('[RIDE Auth] API signup failed:', err.message);
-
-      // Fallback to demo
-      setUser({
-        ...DEMO_USER,
-        email: data.email,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        avatar: '',
-      });
-      setShowAuth(false);
-      return true;
+      setAuthError(err.message || 'Signup failed. Please try again.');
+      return false;
     }
   };
 

@@ -19,18 +19,20 @@ export default function AuthModal() {
     setError('');
     if (!email || !password) { setError('Please fill in all fields'); return; }
     setLoading(true);
-    await login(email, password);
+    const success = await login(email, password);
     setLoading(false);
+    if (!success && authError) setError(authError);
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
     if (!email || !password || !firstName || !lastName) { setError('Please fill in all fields'); return; }
-    if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
+    if (password.length < 8) { setError('Password must be at least 8 characters'); return; }
     setLoading(true);
-    await signup({ email, password, firstName, lastName });
+    const success = await signup({ email, password, firstName, lastName });
     setLoading(false);
+    if (!success && authError) setError(authError);
   };
 
   const switchTab = (tab) => { setAuthTab(tab); setError(''); };

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { BookingProvider } from './context/BookingContext';
 import { Search, Heart, Car, MessageSquare, User, Star } from 'lucide-react';
+import useIsDesktop from './hooks/useIsDesktop';
 import AuthModal from './components/AuthModal';
 import SearchTab from './pages/mobile/SearchTab';
 import FavoritesTab from './pages/mobile/FavoritesTab';
@@ -209,7 +210,8 @@ function AppShell() {
     { id: 2, host: { name: 'Sarah K.', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face' }, vehicle: '2025 Ford Mustang', lastMessage: 'Thanks for the great review! Hope to host you again.', time: '3d ago', unread: false, messages: [{ from: 'you', text: "Just returned the Mustang. Amazing car, thanks so much!", time: '3d ago' }, { from: 'host', text: "Thanks for the great review! Hope to host you again.", time: '3d ago' }] },
     { id: 3, host: { name: 'David R.', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face' }, vehicle: '2024 Jeep Wrangler', lastMessage: 'The Wrangler is ready for Sedona! Full tank and top already off.', time: '1w ago', unread: false, messages: [{ from: 'you', text: "Hey David, do you recommend taking the Wrangler to Sedona?", time: '1w ago' }, { from: 'host', text: "Absolutely! It's perfect for it. The red rocks trails are incredible.", time: '1w ago' }, { from: 'host', text: "The Wrangler is ready for Sedona! Full tank and top already off.", time: '1w ago' }] },
   ]);
-  const { isLoggedIn, openLogin } = useAuth();
+  const { isLoggedIn, openLogin, user } = useAuth();
+  const isDesktop = useIsDesktop();
 
   const toggleFavorite = (carId) => {
     setFavoriteIds(prev => {
@@ -342,6 +344,40 @@ function AppShell() {
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', background: 'var(--bg)' }}>
       <AuthModal />
 
+      {/* Desktop Top Navigation */}
+      <nav className="desktop-nav">
+        <div className="desktop-nav-logo">
+          <span className="text-gold">RIDE</span>
+        </div>
+        <div className="desktop-nav-links">
+          {TABS.map(tab => {
+            const active = activeTab === tab.id && stack.length === 0;
+            const Icon = tab.icon;
+            const hasNotif = tab.id === 'messages' && isLoggedIn;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => switchTab(tab.id)}
+                className={`desktop-nav-link ${active ? 'active' : ''}`}
+              >
+                <Icon size={18} fill={active ? 'currentColor' : 'none'} strokeWidth={active ? 2.5 : 1.8} />
+                {tab.label}
+                {hasNotif && <span className="nav-badge" />}
+              </button>
+            );
+          })}
+        </div>
+        <div className="desktop-nav-actions">
+          {isLoggedIn && user ? (
+            <button onClick={() => switchTab('profile')}>
+              <img src={user.avatar} alt="" className="desktop-nav-avatar" />
+            </button>
+          ) : (
+            <button className="desktop-nav-login" onClick={openLogin}>Log in</button>
+          )}
+        </div>
+      </nav>
+
       {/* Content area */}
       <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
         <div style={{ height: '100%', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}
@@ -349,14 +385,14 @@ function AppShell() {
           className={currentScreen ? 'page-enter' : ''}
         >
           {renderContent()}
-          {/* Bottom spacer for tab bar */}
-          {showTabBar && <div style={{ height: 'var(--tab-height)' }} />}
+          {/* Bottom spacer for tab bar — mobile only */}
+          {showTabBar && !isDesktop && <div style={{ height: 'var(--tab-height)' }} />}
         </div>
       </div>
 
-      {/* Bottom Tab Bar */}
+      {/* Bottom Tab Bar — mobile only */}
       {showTabBar && (
-        <div style={{
+        <div className="mobile-tab-bar" style={{
           position: 'fixed', bottom: 0, left: 0, right: 0,
           height: 'var(--tab-height)',
           background: 'rgba(22,22,22,0.85)',

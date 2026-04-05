@@ -15,6 +15,10 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
 
   if (!car) return null;
 
+  // Deduplicate images
+  const uniqueImages = [...new Set(car.images)];
+  const hasMultipleImages = uniqueImages.length > 1;
+
   const today = new Date().toISOString().split('T')[0];
   const days = startDate && endDate ? Math.max(Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000), 1) : 3;
 
@@ -22,7 +26,7 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
     <div style={{ background: 'var(--bg)', minHeight: '100%', paddingBottom: 100 }}>
       {/* Image carousel */}
       <div style={{ position: 'relative', height: 300, background: '#111' }}>
-        <img src={car.images[imgIndex]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <img src={uniqueImages[hasMultipleImages ? imgIndex % uniqueImages.length : 0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 
         {/* Top bar — z-index above swipe areas */}
         <div style={{
@@ -51,34 +55,38 @@ export default function CarDetailPage({ carId, searchDates, onBack, onBook, onVi
           </div>
         </div>
 
-        {/* Dots */}
-        <div style={{
-          position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)',
-          display: 'flex', gap: 6,
-        }}>
-          {car.images.map((_, i) => (
-            <button key={i} onClick={() => setImgIndex(i)} style={{
-              width: 7, height: 7, borderRadius: '50%',
-              background: i === imgIndex ? '#fff' : 'rgba(255,255,255,0.5)',
-            }} />
-          ))}
-        </div>
+        {/* Dots — only if multiple unique images */}
+        {hasMultipleImages && (
+          <div style={{
+            position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)',
+            display: 'flex', gap: 6,
+          }}>
+            {uniqueImages.map((_, i) => (
+              <button key={i} onClick={() => setImgIndex(i)} style={{
+                width: 7, height: 7, borderRadius: '50%',
+                background: i === imgIndex % uniqueImages.length ? '#fff' : 'rgba(255,255,255,0.5)',
+              }} />
+            ))}
+          </div>
+        )}
 
-        {/* Photo counter */}
-        <div style={{
+        {/* Photo counter — only if multiple */}
+        {hasMultipleImages && <div style={{
           position: 'absolute', bottom: 12, right: 14,
           background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
           padding: '4px 10px', borderRadius: 'var(--r-pill)',
           fontSize: 12, fontWeight: 600, color: '#fff',
         }}>
-          {imgIndex + 1} of {car.images.length}
-        </div>
+          {imgIndex % uniqueImages.length + 1} of {uniqueImages.length}
+        </div>}
 
-        {/* Swipe areas */}
-        <button onClick={() => setImgIndex(i => (i - 1 + car.images.length) % car.images.length)}
-          style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '30%' }} />
-        <button onClick={() => setImgIndex(i => (i + 1) % car.images.length)}
-          style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '30%' }} />
+        {/* Swipe areas — only if multiple */}
+        {hasMultipleImages && <>
+          <button onClick={() => setImgIndex(i => (i - 1 + uniqueImages.length) % uniqueImages.length)}
+            style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '30%' }} />
+          <button onClick={() => setImgIndex(i => (i + 1) % uniqueImages.length)}
+            style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '30%' }} />
+        </>}
       </div>
 
       {/* Content */}

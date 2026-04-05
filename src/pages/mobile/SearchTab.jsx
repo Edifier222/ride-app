@@ -443,11 +443,11 @@ export default function SearchTab({ onSelectCar }) {
 
       {/* ========== SEARCH MODAL ========== */}
       {searchOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 600, background: 'var(--bg)', animation: 'slideUp 0.3s cubic-bezier(0.25,0.1,0.25,1)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999, background: 'var(--bg)', animation: 'slideUp 0.3s cubic-bezier(0.25,0.1,0.25,1)', display: 'flex', flexDirection: 'column' }}>
           {/* Header */}
-          <div style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
-            <button onClick={() => setSearchOpen(false)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
+          <div style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
             <span style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--font-display)' }}>Plan your trip</span>
+            <button onClick={() => setSearchOpen(false)} style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--surface-2)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={18} /></button>
           </div>
 
           {/* Scrollable content */}

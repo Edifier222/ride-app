@@ -16,6 +16,7 @@ import ListCarFlow from './pages/mobile/ListCarFlow';
 import TripDetailPage from './pages/mobile/TripDetailPage';
 import ChatScreen from './pages/mobile/ChatScreen';
 import HostProfilePage from './pages/mobile/HostProfilePage';
+import { HowItWorksPage, TrustSafetyPage, InsurancePage, CancellationPage, AboutPage, CareersPage, BlogPage } from './pages/mobile/ContentPages';
 import Footer from './components/Footer';
 import './styles/global.css';
 
@@ -211,7 +212,7 @@ function AppShell() {
     { id: 2, host: { name: 'Sarah K.', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face' }, vehicle: '2025 Ford Mustang', lastMessage: 'Thanks for the great review! Hope to host you again.', time: '3d ago', unread: false, messages: [{ from: 'you', text: "Just returned the Mustang. Amazing car, thanks so much!", time: '3d ago' }, { from: 'host', text: "Thanks for the great review! Hope to host you again.", time: '3d ago' }] },
     { id: 3, host: { name: 'David R.', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face' }, vehicle: '2024 Jeep Wrangler', lastMessage: 'The Wrangler is ready for Sedona! Full tank and top already off.', time: '1w ago', unread: false, messages: [{ from: 'you', text: "Hey David, do you recommend taking the Wrangler to Sedona?", time: '1w ago' }, { from: 'host', text: "Absolutely! It's perfect for it. The red rocks trails are incredible.", time: '1w ago' }, { from: 'host', text: "The Wrangler is ready for Sedona! Full tank and top already off.", time: '1w ago' }] },
   ]);
-  const { isLoggedIn, openLogin, user } = useAuth();
+  const { isLoggedIn, openLogin, user, markVerified } = useAuth();
   const isDesktop = useIsDesktop();
 
   const toggleFavorite = (carId) => {
@@ -275,7 +276,7 @@ function AppShell() {
             setStack([]);
           }} />;
         case 'verification':
-          return <VerificationFlow onBack={pop} onComplete={pop} />;
+          return <VerificationFlow onBack={pop} onComplete={() => { markVerified(); pop(); }} />;
         case 'listCar':
           return <ListCarFlow onBack={pop} onComplete={() => { popToRoot(); setActiveTab('profile'); }} />;
         case 'paymentMethods':
@@ -387,7 +388,11 @@ function AppShell() {
         >
           {renderContent()}
           {/* Desktop footer — show on tab-level pages */}
-          {isDesktop && showTabBar && <Footer />}
+          {isDesktop && showTabBar && <Footer
+            onNavigate={(screen) => push(screen)}
+            onSwitchTab={(tabId) => switchTab(tabId)}
+            onSearchCity={(city) => { setActiveTab('search'); setStack([]); }}
+          />}
           {/* Bottom spacer for tab bar — mobile only */}
           {showTabBar && !isDesktop && <div style={{ height: 'var(--tab-height)' }} />}
         </div>

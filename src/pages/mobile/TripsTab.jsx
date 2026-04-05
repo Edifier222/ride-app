@@ -5,8 +5,12 @@ import useIsDesktop from '../../hooks/useIsDesktop';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 
+import { useAuth } from '../../context/AuthContext';
+
 export default function TripsTab({ lastBooking, onVerify, onSelectTrip }) {
   const isDesktop = useIsDesktop();
+  const { user } = useAuth();
+  const isVerified = user?.verified || false;
   const [priceBreakdown, setPriceBreakdown] = useState(null);
   const trips = [];
   if (lastBooking && lastBooking.vehicle) trips.push(lastBooking);
@@ -47,7 +51,7 @@ export default function TripsTab({ lastBooking, onVerify, onSelectTrip }) {
         </div>
 
         {/* Verify prompt for pending */}
-        {trip.status === 'pending' && !trip.verified && (
+        {trip.status === 'pending' && !isVerified && !trip.verified && (
           <div style={{ padding: '0 16px 14px' }}>
             <button
               onClick={(e) => { e.stopPropagation(); onVerify(); }}

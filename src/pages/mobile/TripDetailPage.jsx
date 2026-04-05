@@ -4,7 +4,10 @@ import { protectionPlans } from '../../data/listings';
 
 const fmt = (n) => typeof n === "number" ? "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "$" + n;
 
+import { useAuth } from '../../context/AuthContext';
+
 export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onViewCar }) {
+  const { user } = useAuth();
   const v = trip?.vehicle;
   if (!v) return <div style={{ padding: 40, textAlign: 'center' }}><button onClick={onBack} className="btn-primary">Back</button></div>;
   const isPending = trip.status === 'pending';
@@ -168,7 +171,7 @@ export default function TripDetailPage({ trip, onBack, onVerify, onMessage, onVi
         {(isPending || isUpcoming) && (
           <>
             {/* Verify ID */}
-            {!trip.verified && (
+            {!user?.verified && !trip.verified && (
               <button onClick={onVerify} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 14, background: 'var(--surface)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', padding: '16px 18px', marginBottom: 10, textAlign: 'left' }}>
                 <span style={{ fontSize: 24 }}>🪪</span>
                 <div style={{ flex: 1 }}>

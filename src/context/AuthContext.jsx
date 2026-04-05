@@ -92,6 +92,10 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const markVerified = () => {
+    if (user) setUser(prev => ({ ...prev, verified: true }));
+  };
+
   const toggleMode = () => {
     if (user) {
       setUser(prev => ({
@@ -112,6 +116,7 @@ export function AuthProvider({ children }) {
       isHost: user?.mode === 'host',
       isGuest: user?.mode === 'guest' || !user,
       authToken: user?.token || null,
+      markVerified,
       login,
       signup,
       logout,

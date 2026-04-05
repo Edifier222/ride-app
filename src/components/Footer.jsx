@@ -1,13 +1,61 @@
-const footerLinks = {
-  Explore: ['Browse cars', 'How it works', 'Trust & safety', 'Insurance & protection', 'Cancellation policy'],
-  Hosting: ['List your car', 'Host tools', 'Earnings calculator', 'Host protection', 'All-Star Hosts'],
-  Company: ['About', 'Careers', 'Press', 'Blog', 'OpenRoad'],
-  Support: ['Help center', 'Get help', 'Safety', 'Report issue'],
-};
-
 const cities = ['Austin', 'Denver', 'Los Angeles', 'Miami', 'Phoenix', 'San Francisco', 'Seattle', 'New York'];
 
-export default function Footer() {
+export default function Footer({ onNavigate, onSwitchTab, onSearchCity }) {
+
+  const go = (action) => {
+    // Scroll to top when navigating
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    action();
+  };
+
+  const footerSections = [
+    {
+      title: 'Explore',
+      links: [
+        { label: 'Browse cars', action: () => go(() => onSwitchTab('search')) },
+        { label: 'How it works', action: () => go(() => onNavigate('howItWorks')) },
+        { label: 'Trust & safety', action: () => go(() => onNavigate('trustSafety')) },
+        { label: 'Insurance & protection', action: () => go(() => onNavigate('insurance')) },
+        { label: 'Cancellation policy', action: () => go(() => onNavigate('cancellation')) },
+      ],
+    },
+    {
+      title: 'Hosting',
+      links: [
+        { label: 'List your car', action: () => go(() => onNavigate('listCar')) },
+        { label: 'Earnings', action: () => go(() => onNavigate('earnings')) },
+        { label: 'Host protection', action: () => go(() => onNavigate('insurance')) },
+        { label: 'Host reviews', action: () => go(() => onNavigate('hostReviews')) },
+        { label: 'Host tools', action: () => go(() => onNavigate('howItWorks')) },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { label: 'About RIDE', action: () => go(() => onNavigate('about')) },
+        { label: 'Careers', action: () => go(() => onNavigate('careers')) },
+        { label: 'Press', action: () => go(() => onNavigate('about')) },
+        { label: 'Blog', action: () => go(() => onNavigate('blog')) },
+      ],
+    },
+    {
+      title: 'Support',
+      links: [
+        { label: 'Help center', action: () => go(() => onNavigate('helpCenter')) },
+        { label: 'Contact us', action: () => go(() => onNavigate('helpCenter')) },
+        { label: 'Safety', action: () => go(() => onNavigate('trustSafety')) },
+        { label: 'Report issue', action: () => go(() => onNavigate('helpCenter')) },
+      ],
+    },
+  ];
+
+  const legalLinks = [
+    { label: 'Terms of Service', action: () => go(() => onNavigate('termsPrivacy')) },
+    { label: 'Privacy Policy', action: () => go(() => onNavigate('termsPrivacy')) },
+    { label: 'Cookie Preferences', action: () => go(() => onNavigate('termsPrivacy')) },
+    { label: 'Sitemap', action: () => go(() => onNavigate('howItWorks')) },
+  ];
+
   return (
     <footer style={{
       background: 'var(--surface)', borderTop: '1px solid var(--border)',
@@ -23,7 +71,7 @@ export default function Footer() {
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {cities.map(city => (
-            <span key={city} style={{
+            <button key={city} onClick={() => go(() => { onSearchCity(city); onSwitchTab('search'); })} style={{
               padding: '6px 16px', borderRadius: 'var(--r-pill)',
               background: 'var(--surface-2)', border: '1px solid var(--border)',
               fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer',
@@ -33,7 +81,7 @@ export default function Footer() {
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
             >
               Car rental {city}
-            </span>
+            </button>
           ))}
         </div>
       </div>
@@ -86,18 +134,18 @@ export default function Footer() {
         </div>
 
         {/* Link columns */}
-        {Object.entries(footerLinks).map(([section, links]) => (
-          <div key={section}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 16 }}>{section}</div>
+        {footerSections.map(({ title, links }) => (
+          <div key={title}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 16 }}>{title}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {links.map(link => (
-                <a key={link} style={{
+                <button key={link.label} onClick={link.action} style={{
                   fontSize: 13, color: 'var(--text-tertiary)', cursor: 'pointer',
-                  transition: 'color 0.15s',
+                  transition: 'color 0.15s', textAlign: 'left',
                 }}
                   onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}
                   onMouseLeave={e => e.currentTarget.style.color = 'var(--text-tertiary)'}
-                >{link}</a>
+                >{link.label}</button>
               ))}
             </div>
           </div>
@@ -115,14 +163,14 @@ export default function Footer() {
           &copy; 2026 Ride, Inc. All rights reserved.
         </span>
         <div style={{ display: 'flex', gap: 20 }}>
-          {['Terms of Service', 'Privacy Policy', 'Cookie Preferences', 'Sitemap'].map(item => (
-            <a key={item} style={{
+          {legalLinks.map(link => (
+            <button key={link.label} onClick={link.action} style={{
               fontSize: 12, color: 'var(--text-tertiary)', cursor: 'pointer',
               transition: 'color 0.15s',
             }}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--text)'}
               onMouseLeave={e => e.currentTarget.style.color = 'var(--text-tertiary)'}
-            >{item}</a>
+            >{link.label}</button>
           ))}
         </div>
       </div>

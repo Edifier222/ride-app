@@ -368,8 +368,12 @@ function AppShell() {
       {/* Desktop Top Navigation */}
       <nav className="desktop-nav">
         <div className="desktop-nav-logo">
-          <span className="text-gold">RIDE</span>
-          <span style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 400, letterSpacing: '0.04em', marginLeft: 8, alignSelf: 'flex-end', marginBottom: 2 }}>powered by <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Outdoorsy</span></span>
+          <div>
+            <span className="text-gold">RIDE</span>
+            <div style={{ fontSize: 9, color: 'var(--text-tertiary)', fontWeight: 400, letterSpacing: '0.04em', marginTop: -2 }}>
+              powered by <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Outdoorsy</span>
+            </div>
+          </div>
         </div>
         <div className="desktop-nav-links">
           {TABS.map(tab => {

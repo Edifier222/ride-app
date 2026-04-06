@@ -32,7 +32,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "118 MPGe",
-    pricePerDay: 85,
+    pricePerDay: 75,
     location: { city: "Phoenix", state: "AZ", lat: 33.4484, lng: -112.074 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2026-tesla-model-y-long-range-awd-121-688bc237a2711.jpg?crop=0.615xw:0.519xh;0.0865xw,0.365xh&resize=800:*",
@@ -62,7 +62,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "24 MPG",
-    pricePerDay: 110,
+    pricePerDay: 125,
     location: { city: "Phoenix", state: "AZ", lat: 33.4484, lng: -112.074 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2024-bmw-x5-m60i-134-6602d491051b2.jpg?crop=0.702xw:0.591xh;0.131xw,0.276xh&resize=800:*",
@@ -92,7 +92,7 @@ export const listings = [
     doors: 2,
     transmission: "Automatic",
     mpg: "27 MPG",
-    pricePerDay: 105,
+    pricePerDay: 89,
     location: { city: "Phoenix", state: "AZ", lat: 33.4484, lng: -112.074 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2026-mustang-fx-package-21-6843458c131a9.jpg?crop=0.659xw:0.567xh;0.155xw,0.330xh&resize=800:*",
@@ -122,7 +122,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "32 MPG",
-    pricePerDay: 52,
+    pricePerDay: 38,
     location: { city: "Phoenix", state: "AZ", lat: 33.4484, lng: -112.074 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2026-toyota-camry-se-hybrid-nightshade-fwd-155-695bf27312d0c.jpg?crop=0.766xw:0.643xh;0.161xw,0.260xh&resize=800:*",
@@ -152,7 +152,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "22 MPG",
-    pricePerDay: 95,
+    pricePerDay: 85,
     location: { city: "Phoenix", state: "AZ", lat: 33.4484, lng: -112.074 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2024-jeep-wrangler-rubicon-392-115-65ce2a6fd289e.jpg?crop=0.692xw:0.584xh;0.226xw,0.329xh&resize=800:*",
@@ -183,7 +183,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "29 MPG",
-    pricePerDay: 105,
+    pricePerDay: 95,
     location: { city: "Los Angeles", state: "CA", lat: 34.0522, lng: -118.2437 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2022-mercedes-benz-c-class-118-1613767289.jpg?crop=0.869xw:0.731xh;0.115xw,0.269xh&resize=800:*",
@@ -213,7 +213,7 @@ export const listings = [
     doors: 2,
     transmission: "Automatic",
     mpg: "19 MPG",
-    pricePerDay: 120,
+    pricePerDay: 295,
     location: { city: "Los Angeles", state: "CA", lat: 34.0522, lng: -118.2437 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2023-chevrolet-corvette-stingray-convertible-3lt-z51-681-1665496990.jpg?crop=0.686xw:0.578xh;0.268xw,0.422xh&resize=800:*",
@@ -243,7 +243,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "40 MPG",
-    pricePerDay: 65,
+    pricePerDay: 52,
     location: { city: "Los Angeles", state: "CA", lat: 34.0522, lng: -118.2437 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2023-honda-cr-v-ex-l-awd-103-66295ff8362ee.jpg?crop=0.609xw:0.514xh;0.200xw,0.332xh&resize=800:*",
@@ -273,7 +273,7 @@ export const listings = [
     doors: 2,
     transmission: "Automatic",
     mpg: "24 MPG",
-    pricePerDay: 120,
+    pricePerDay: 375,
     location: { city: "Los Angeles", state: "CA", lat: 34.0522, lng: -118.2437 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2025-porsche-911-carrera-t-103-69371b6c2a013.jpg?crop=0.809xw:0.683xh;0.107xw,0.202xh&resize=800:*",
@@ -303,7 +303,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "30 MPG",
-    pricePerDay: 62,
+    pricePerDay: 48,
     location: { city: "Los Angeles", state: "CA", lat: 34.0522, lng: -118.2437 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2026-toyota-rav4-limited-352-68f0e7f67ae2b.jpg?crop=0.732xw:0.617xh;0.228xw,0.290xh&resize=800:*",
@@ -334,7 +334,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "21 MPG",
-    pricePerDay: 110,
+    pricePerDay: 95,
     location: { city: "Miami", state: "FL", lat: 25.7617, lng: -80.1918 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/bronco-60th-anniversary-package-04-688d01c6eeb55.jpg?crop=0.744xw:0.785xh;0.131xw,0.154xh&resize=800:*",
@@ -364,7 +364,7 @@ export const listings = [
     doors: 2,
     transmission: "Automatic",
     mpg: "15 MPG",
-    pricePerDay: 120,
+    pricePerDay: 995,
     location: { city: "Miami", state: "FL", lat: 25.7617, lng: -80.1918 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2023-lamborghini-huracan-sterrato-135-66844c67d8d43.jpg?crop=0.620xw:0.522xh;0.146xw,0.251xh&resize=800:*",
@@ -394,7 +394,7 @@ export const listings = [
     doors: 2,
     transmission: "Automatic",
     mpg: "26 MPG",
-    pricePerDay: 110,
+    pricePerDay: 135,
     location: { city: "Miami", state: "FL", lat: 25.7617, lng: -80.1918 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2025-bmw-430i-convertible-front-motion-65b931d51a823.jpg?crop=0.744xw:0.611xh;0.146xw,0.220xh&resize=800:*",
@@ -424,7 +424,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "37 MPG",
-    pricePerDay: 48,
+    pricePerDay: 35,
     location: { city: "Miami", state: "FL", lat: 25.7617, lng: -80.1918 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2024-hyundai-elantra-limited-120-64ef85e5113c4.jpg?crop=0.764xw:0.647xh;0.122xw,0.320xh&resize=800:*",
@@ -454,7 +454,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "22 MPG",
-    pricePerDay: 120,
+    pricePerDay: 225,
     location: { city: "Miami", state: "FL", lat: 25.7617, lng: -80.1918 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2023-land-rover-range-rover-sport-first-edition-101-1663595727.jpg?crop=0.841xw:0.712xh;0.123xw,0.137xh&resize=800:*",
@@ -485,7 +485,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "132 MPGe",
-    pricePerDay: 72,
+    pricePerDay: 62,
     location: { city: "Austin", state: "TX", lat: 30.2672, lng: -97.7431 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2026-tesla-model-3-performance-103-68a6100d88660.jpg?crop=0.529xw:0.528xh;0.242xw,0.250xh&resize=800:*",
@@ -515,7 +515,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "24 MPG",
-    pricePerDay: 90,
+    pricePerDay: 85,
     location: { city: "Austin", state: "TX", lat: 30.2672, lng: -97.7431 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2025-ford-f150-xlt-106-67e438c32296f.jpg?crop=0.681xw:0.577xh;0.130xw,0.322xh&resize=800:*",
@@ -545,7 +545,7 @@ export const listings = [
     doors: 2,
     transmission: "Manual",
     mpg: "30 MPG",
-    pricePerDay: 95,
+    pricePerDay: 79,
     location: { city: "Austin", state: "TX", lat: 30.2672, lng: -97.7431 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2024-mazda-mx-5-miata-red-white-in-motion-65b3c9d045b5a.jpg?crop=0.420xw:0.356xh;0.322xw,0.577xh&resize=800:*",
@@ -575,7 +575,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "105 MPGe",
-    pricePerDay: 120,
+    pricePerDay: 195,
     location: { city: "Austin", state: "TX", lat: 30.2672, lng: -97.7431 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2025-rivian-r1s-tri-motor-3773-680145cf16380.jpg?crop=0.696xw:0.589xh;0.141xw,0.274xh&resize=800:*",
@@ -606,7 +606,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "28 MPG",
-    pricePerDay: 99,
+    pricePerDay: 89,
     location: { city: "New York", state: "NY", lat: 40.7128, lng: -74.006 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2021-audi-a4-45-tfsi-quattro-104-1607927016.jpg?crop=0.450xw:0.380xh;0.226xw,0.399xh&resize=800:*",
@@ -636,7 +636,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "32 MPG",
-    pricePerDay: 48,
+    pricePerDay: 36,
     location: { city: "New York", state: "NY", lat: 40.7128, lng: -74.006 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2025-nissan-altima-sv-special-edition-9-695be69714b9a.jpg?crop=0.793xw:0.664xh;0.175xw,0.305xh&resize=800:*",
@@ -666,7 +666,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "20 MPG",
-    pricePerDay: 120,
+    pricePerDay: 245,
     location: { city: "New York", state: "NY", lat: 40.7128, lng: -74.006 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/f1755ebd-4772-4223-a7cb-2843b610812c.jpg?crop=0.646xw:0.546xh;0.208xw,0.327xh&resize=800:*",
@@ -697,7 +697,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "29 MPG",
-    pricePerDay: 68,
+    pricePerDay: 55,
     location: { city: "Denver", state: "CO", lat: 39.7392, lng: -104.9903 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2026-subaru-outback-wilderness-148-6995ed6a635f0.jpg?crop=0.721xw:0.611xh;0.141xw,0.279xh&resize=800:*",
@@ -727,7 +727,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "18 MPG",
-    pricePerDay: 95,
+    pricePerDay: 89,
     location: { city: "Denver", state: "CO", lat: 39.7392, lng: -104.9903 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2025-toyota-4runner-121-68404f2b08392.jpg?crop=0.861xw:0.728xh;0.0641xw,0.142xh&resize=800:*",
@@ -757,7 +757,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "104 MPGe",
-    pricePerDay: 78,
+    pricePerDay: 62,
     location: { city: "Denver", state: "CO", lat: 39.7392, lng: -104.9903 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2026-volkswagen-id4-pr-103-6862bb6b3bf4a.jpg?crop=0.619xw:0.522xh;0.231xw,0.284xh&resize=800:*",
@@ -788,7 +788,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "120 MPGe",
-    pricePerDay: 115,
+    pricePerDay: 110,
     location: { city: "San Francisco", state: "CA", lat: 37.7749, lng: -122.4194 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2026-tesla-model-s-plaid-134-68f6610846819.jpg?crop=0.885xw:0.746xh;0.114xw,0.134xh&resize=800:*",
@@ -818,7 +818,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "38 MPG",
-    pricePerDay: 58,
+    pricePerDay: 48,
     location: { city: "San Francisco", state: "CA", lat: 37.7749, lng: -122.4194 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2026-kia-sportage-pr-114-673f7ae56c057.jpg?crop=0.796xw:0.673xh;0.103xw,0.142xh&resize=800:*",
@@ -849,7 +849,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "30 MPG",
-    pricePerDay: 105,
+    pricePerDay: 95,
     location: { city: "Seattle", state: "WA", lat: 47.6062, lng: -122.3321 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2026-volvo-xc60-hybrid-pr-110-67b49faade1f0.jpg?crop=0.655xw:0.494xh;0.178xw,0.212xh&resize=800:*",
@@ -879,7 +879,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "21 MPG",
-    pricePerDay: 92,
+    pricePerDay: 88,
     location: { city: "Seattle", state: "WA", lat: 47.6062, lng: -122.3321 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2022-gmc-sierra-1500-denali-ultimate-105-1667227027.jpg?crop=0.582xw:0.490xh;0.154xw,0.260xh&resize=800:*",
@@ -910,7 +910,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "17 MPG",
-    pricePerDay: 120,
+    pricePerDay: 250,
     location: { city: "Las Vegas", state: "NV", lat: 36.1699, lng: -115.1398 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2025-cadillac-escalade-136-68dfcd4c207ca.jpg?crop=0.613xw:0.520xh;0.260xw,0.354xh&resize=800:*",
@@ -940,7 +940,7 @@ export const listings = [
     doors: 2,
     transmission: "Automatic",
     mpg: "25 MPG",
-    pricePerDay: 100,
+    pricePerDay: 89,
     location: { city: "Las Vegas", state: "NV", lat: 36.1699, lng: -115.1398 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2024-chevrolet-camaro-ss-collectors-edition-1-647e1933c6c20.jpg?crop=0.827xw:0.853xh;0.0946xw,0.129xh&resize=800:*",
@@ -970,7 +970,7 @@ export const listings = [
     doors: 4,
     transmission: "Automatic",
     mpg: "116 MPGe",
-    pricePerDay: 78,
+    pricePerDay: 65,
     location: { city: "Las Vegas", state: "NV", lat: 36.1699, lng: -115.1398 },
     images: [
       "https://hips.hearstapps.com/hmg-prod/images/2025-kia-ev6-pr-118-673f77babe90a.jpg?crop=0.758xw:0.639xh;0.131xw,0.248xh&resize=800:*",

@@ -89,7 +89,7 @@ export default function SearchTab({ onSelectCar }) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  const [maxPrice, setMaxPrice] = useState(600);
+  const [maxPrice, setMaxPrice] = useState(1000);
   const [fuelFilter, setFuelFilter] = useState('All');
   const [typeFilter, setTypeFilter] = useState('All');
   const [makeFilter, setMakeFilter] = useState('All');
@@ -142,7 +142,7 @@ export default function SearchTab({ onSelectCar }) {
     return result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
   }, [apiResults, maxPrice, typeFilter, fuelFilter, makeFilter, modelFilter, transFilter, seatsFilter, deliveryFilter, instantFilter, featureFilters, isLive]);
 
-  const activeFilterCount = [typeFilter !== 'All', fuelFilter !== 'All', makeFilter !== 'All', transFilter !== 'All', seatsFilter !== 'All', deliveryFilter, instantFilter, featureFilters.length > 0, maxPrice < 200].filter(Boolean).length;
+  const activeFilterCount = [typeFilter !== 'All', fuelFilter !== 'All', makeFilter !== 'All', transFilter !== 'All', seatsFilter !== 'All', deliveryFilter, instantFilter, featureFilters.length > 0, maxPrice < 1000].filter(Boolean).length;
 
   // Track if map has been fitted to bounds already
   const mapFittedRef = useRef(false);
@@ -215,7 +215,7 @@ export default function SearchTab({ onSelectCar }) {
   }, [city]);
   const hasFilters = activeFilterCount > 0;
 
-  const resetFilters = () => { setMaxPrice(200); setTypeFilter('All'); setFuelFilter('All'); setMakeFilter('All'); setModelFilter('All'); setTransFilter('All'); setSeatsFilter('All'); setFeatureFilters([]); setDeliveryFilter(false); setInstantFilter(false); setFilterSearch(''); setBrandExpanded(false); };
+  const resetFilters = () => { setMaxPrice(1000); setTypeFilter('All'); setFuelFilter('All'); setMakeFilter('All'); setModelFilter('All'); setTransFilter('All'); setSeatsFilter('All'); setFeatureFilters([]); setDeliveryFilter(false); setInstantFilter(false); setFilterSearch(''); setBrandExpanded(false); };
 
   const toggleFeatureFilter = (f) => setFeatureFilters(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
 
@@ -474,9 +474,9 @@ export default function SearchTab({ onSelectCar }) {
               <span style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>Up to</span>
               <span style={{ fontSize: 22, fontWeight: 700, fontFamily: 'var(--font-display)', color: 'var(--accent-text)' }}>${maxPrice}</span>
             </div>
-            <input type="range" min={30} max={200} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)', height: 4 }} />
+            <input type="range" min={30} max={1000} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)', height: 4 }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-tertiary)', marginTop: 6 }}>
-              <span>$30</span><span>$200</span>
+              <span>$30</span><span>$1,000</span>
             </div>
           </div>
         </div>
@@ -614,11 +614,11 @@ export default function SearchTab({ onSelectCar }) {
                 {/* Price dropdown */}
                 <button onClick={() => setShowFilters(true)} style={{
                   padding: '7px 16px', borderRadius: 'var(--r-pill)', fontSize: 13, fontWeight: 500,
-                  background: maxPrice < 200 ? 'var(--accent)' : 'var(--surface-2)',
-                  color: maxPrice < 200 ? 'var(--text-inverse)' : 'var(--text-secondary)',
-                  border: maxPrice < 200 ? '1px solid var(--accent)' : '1px solid var(--border)',
+                  background: maxPrice < 1000 ? 'var(--accent)' : 'var(--surface-2)',
+                  color: maxPrice < 1000 ? 'var(--text-inverse)' : 'var(--text-secondary)',
+                  border: maxPrice < 1000 ? '1px solid var(--accent)' : '1px solid var(--border)',
                   display: 'flex', alignItems: 'center', gap: 5, transition: 'all 0.15s',
-                }}>{maxPrice < 200 ? `Under $${maxPrice}` : 'Price'} <SlidersHorizontal size={12} /></button>
+                }}>{maxPrice < 1000 ? `Under $${maxPrice}` : 'Price'} <SlidersHorizontal size={12} /></button>
 
                 {/* More filters */}
                 <button onClick={() => setShowFilters(true)} style={{
@@ -741,7 +741,7 @@ export default function SearchTab({ onSelectCar }) {
                       </div>
                       <div style={{ fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 6 }}>No cars found</div>
                       <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 24 }}>Try a different location or adjust your filters</div>
-                      <button className="btn-secondary btn-sm" onClick={() => { setCity(''); setMaxPrice(600); setFuelFilter('All'); }}>Clear all filters</button>
+                      <button className="btn-secondary btn-sm" onClick={() => { setCity(''); setMaxPrice(1000); setFuelFilter('All'); }}>Clear all filters</button>
                     </div>
                   ) : null}
                 </>
@@ -796,7 +796,7 @@ export default function SearchTab({ onSelectCar }) {
                 </div>
                 <div style={{ fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 6 }}>No cars found</div>
                 <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 24 }}>Try a different location or adjust your filters</div>
-                <button className="btn-secondary btn-sm" onClick={() => { setCity(''); setMaxPrice(600); setFuelFilter('All'); }}>Clear all filters</button>
+                <button className="btn-secondary btn-sm" onClick={() => { setCity(''); setMaxPrice(1000); setFuelFilter('All'); }}>Clear all filters</button>
               </div>
             ) : null}
           </div>}
@@ -1099,9 +1099,9 @@ export default function SearchTab({ onSelectCar }) {
                   <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Max per day</span>
                   <span style={{ fontSize: 20, fontWeight: 700, fontFamily: 'var(--font-display)', color: 'var(--accent-text)' }}>${maxPrice}</span>
                 </div>
-                <input type="range" min={30} max={200} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)' }} />
+                <input type="range" min={30} max={1000} value={maxPrice} onChange={e => setMaxPrice(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--accent)' }} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-tertiary)', marginTop: 6 }}>
-                  <span>$30</span><span>$200</span>
+                  <span>$30</span><span>$1,000</span>
                 </div>
               </div>
             </div>

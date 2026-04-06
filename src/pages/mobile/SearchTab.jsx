@@ -535,8 +535,11 @@ export default function SearchTab({ onSelectCar }) {
                 Find your perfect <span className="text-gold">ride</span>
               </h1>
               <p style={{ fontSize: 17, color: 'var(--text-secondary)', maxWidth: 500 }}>
-                Professionally managed cars, ready when you are.
+                Professionally managed cars, <span style={{ color: 'var(--accent-text)', fontWeight: 500 }}>ready when you are.</span>
               </p>
+              <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 8, letterSpacing: '0.06em' }}>
+                powered by <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Outdoorsy</span>
+              </div>
             </div>
           )}
 

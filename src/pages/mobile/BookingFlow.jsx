@@ -30,6 +30,7 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
   const [plan, setPlan] = useState(protectionPlans[1]);
   const [declineProtection, setDeclineProtection] = useState(false);
   const [payMethod, setPayMethod] = useState('card');
+  const [termsAgreed, setTermsAgreed] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState(null);
 
@@ -780,15 +781,32 @@ export default function BookingFlow({ car, dates, onBack, onComplete }) {
           Pay Later
         </button>
 
-        {/* Terms */}
-        <p style={{ fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.6, marginBottom: 20 }}>
-          By submitting, you agree to the <span style={{ textDecoration: 'underline' }}>Terms of Service</span>, <span style={{ textDecoration: 'underline' }}>Protection Package Terms</span>, and <span style={{ textDecoration: 'underline' }}>Privacy Policy</span>. The host has 24 hours to accept. You won't be charged until the booking is confirmed.
-        </p>
+
+        {/* Terms acknowledgement checkbox */}
+        <label style={{
+          display: 'flex', gap: 12, padding: '16px', marginBottom: 20,
+          background: 'var(--surface)', borderRadius: 'var(--r-md)',
+          border: termsAgreed ? '1.5px solid var(--accent)' : '1px solid var(--border)',
+          cursor: 'pointer',
+        }}>
+          <div style={{
+            width: 22, height: 22, borderRadius: 6, flexShrink: 0, marginTop: 2,
+            border: termsAgreed ? 'none' : '2px solid var(--border-light)',
+            background: termsAgreed ? 'var(--accent)' : 'transparent',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {termsAgreed && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-inverse)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+          </div>
+          <input type="checkbox" checked={termsAgreed} onChange={e => setTermsAgreed(e.target.checked)} style={{ display: 'none' }} />
+          <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            I agree to the <span style={{ color: 'var(--accent-text)', textDecoration: 'underline' }}>Outdoorsy Terms of Service</span>, <span style={{ color: 'var(--accent-text)', textDecoration: 'underline' }}>Rental Protection Package Terms</span>, <span style={{ color: 'var(--accent-text)', textDecoration: 'underline' }}>Privacy Policy</span>, and <span style={{ color: 'var(--accent-text)', textDecoration: 'underline' }}>Vehicle Rental Agreement</span>. The host has 24 hours to accept. I won't be charged until the booking is confirmed.
+          </div>
+        </label>
       </div>
 
       {bottomBar(
         backBtn(2),
-        <button className="btn-primary" style={{ width: 'auto', padding: '14px 28px' }} onClick={handleSubmit} disabled={processing}>
+        <button className="btn-primary" style={{ width: 'auto', padding: '14px 28px', opacity: termsAgreed ? 1 : 0.4 }} onClick={handleSubmit} disabled={!termsAgreed || processing}>
           {processing ? (
             <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ width: 16, height: 16, border: '2px solid rgba(10,10,10,0.3)', borderTopColor: 'var(--bg)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />

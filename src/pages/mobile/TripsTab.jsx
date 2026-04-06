@@ -16,9 +16,10 @@ export default function TripsTab({ lastBooking, onVerify, onSelectTrip }) {
   if (lastBooking && lastBooking.vehicle) trips.push(lastBooking);
   guestTrips.forEach(t => { if (t && t.vehicle) trips.push(t); });
 
-  const pending = trips.filter(t => t.status === 'pending');
+  const pending = trips.filter(t => t.status === 'pending' || t.status === 'negotiating');
   const upcoming = trips.filter(t => t.status === 'upcoming');
   const completed = trips.filter(t => t.status === 'completed');
+  const cancelled = trips.filter(t => t.status === 'cancelled' || t.status === 'canceled');
 
   const TripCard = ({ trip }) => {
     const v = trip.vehicle;
@@ -176,6 +177,21 @@ export default function TripsTab({ lastBooking, onVerify, onSelectTrip }) {
                   </div>
                 )}
               </div>
+            ))}
+          </div>
+        )}
+
+        {/* CANCELLED */}
+        {cancelled.length > 0 && (
+          <div>
+            <SectionHeader
+              icon={<X size={16} color="#D4453A" />}
+              title="Cancelled"
+              count={cancelled.length}
+              color="#D4453A"
+            />
+            {cancelled.map((trip, i) => (
+              <TripCard key={trip.id || `x${i}`} trip={trip} />
             ))}
           </div>
         )}

@@ -534,11 +534,11 @@ export default function SearchTab({ onSelectCar }) {
               <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 42, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.15, marginBottom: 8 }}>
                 Find your perfect <span className="text-gold">ride</span>
               </h1>
-              <p style={{ fontSize: 17, color: 'var(--text-secondary)', maxWidth: 500 }}>
+              <p style={{ fontSize: 17, color: 'var(--text-secondary)', maxWidth: 500, marginBottom: 10 }}>
                 Professionally managed cars, <span style={{ color: 'var(--accent-text)', fontWeight: 500 }}>ready when you are.</span>
               </p>
-              <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 8, letterSpacing: '0.06em' }}>
-                powered by <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Outdoorsy</span>
+              <div style={{ fontSize: 14, color: 'var(--text-tertiary)', letterSpacing: '0.04em' }}>
+                powered by <span style={{ fontWeight: 700, color: 'var(--text)' }}>Outdoorsy</span>
               </div>
             </div>
           )}

@@ -328,6 +328,7 @@ input, select, textarea { font-family: var(--font-body); font-size: 17px; color:
   font-family: var(--font-display);
   font-weight: 700; font-size: 24px;
   letter-spacing: 0.08em;
+  display: flex; align-items: baseline; gap: 0;
 }
 .desktop-nav-links {
   display: flex; align-items: center; gap: 4px;
